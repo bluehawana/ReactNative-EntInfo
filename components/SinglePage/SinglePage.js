@@ -1,11 +1,24 @@
 import React from "react";
-import { img_300 } from "../../.expo/config";
+import { View, Text, Image } from "react-native-web";
 
-const SinglePage = ({ id, poster, title, date, media_type, vote_average }) => {
+const SinglePage = ({
+  id,
+  poster,
+  title,
+  date,
+  media_type,
+  vote_average,
+  poster_path,
+}) => {
   return (
-    <div className="single-page">
-      <img src={"https://image.tmdb.org/t/p/w342/" + poster} alt=""></img>
-    </div>
+    <View>
+      <Image
+        source={{
+          uri: "https://image.tmdb.org/t/p/w342/ " + media.poster.poster_path,
+        }}
+        alt=""
+      ></Image>
+    </View>
   );
 };
 

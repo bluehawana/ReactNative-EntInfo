@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
-import {StyleSheet, View,Text,Button} from 'react-native-web'
+import { StyleSheet, View, Text, Button, Image } from "react-native";
 import axios from "axios";
 import { useState } from "react";
-import "../SinglePage/SinglePage";
 import SinglePage from "../SinglePage/SinglePage";
-import MovieItem from "../models/MovieItem";
 
 const Movies = () => {
   const [content, setContent] = useState([]);
@@ -20,24 +18,28 @@ const Movies = () => {
   }, []);
 
   return (
-    <Text>
-      <div className="pageTitle">Movies</div>
-      <div className="movies">
+    <View>
+      <Text>Movies</Text>
+      <View>
         {content &&
-          content.map((media) => (
-            <SinglePage
-              key={media.id}
-              id={media.id}
-              poster={media.poster_path}
-              title={media.title || media.name}
-              date={media.first_air_date || media.release_date}
-              media_type={media.media_type}
-              vote_average={media.vote_average}
-            />
-          ))}
-      </div>
-    </Text>
+          content.map((media) => {
+            return;
+
+            <SinglePage item={item} />;
+          })}
+      </View>
+    </View>
   );
 };
 
 export default Movies;
+
+/*
+
+
+const Movies = () => {
+  
+  );
+};
+
+export default Movies*/

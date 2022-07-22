@@ -1,7 +1,12 @@
 import React from "react";
+import { Text, View } from "react-native";
 
 const TVs = () => {
-  return <div>TVs</div>;
+  return (
+    <View>
+      <Text>TVs</Text>
+    </View>
+  );
 };
 
 export default TVs;
