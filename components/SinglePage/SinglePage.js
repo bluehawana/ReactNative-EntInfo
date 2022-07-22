@@ -1,25 +1,29 @@
 import React from "react";
-import { View, Text, Image } from "react-native-web";
+import { View, Text, StyleSheet, Image } from "react-native";
 
-const SinglePage = ({
-  id,
-  poster,
-  title,
-  date,
-  media_type,
-  vote_average,
-  poster_path,
-}) => {
+function SinglePage(props) {
   return (
-    <View>
+    <View style={styles.item}>
       <Image
+        style={styles.poster}
         source={{
-          uri: "https://image.tmdb.org/t/p/w342/ " + media.poster.poster_path,
+          uri: "http://image.tmdb.org/t/p/w342/" + props.media.poster_path,
         }}
-        alt=""
-      ></Image>
+      />
+      <Text>{props.media.title}</Text>
     </View>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  item: {
+    flexDirection: "column",
+    flexWrap: "wrap",
+  },
+  poster: {
+    width: 342,
+    height: 513,
+  },
+});
 
 export default SinglePage;
