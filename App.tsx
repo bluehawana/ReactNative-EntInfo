@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image, StyleSheet, StatusBar } from 'react-native';
+import { Text, View, Image, StyleSheet, StatusBar, Share, Alert, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,9 +9,10 @@ import { MoviesScreen } from './components/screens/MoviesScreen';
 import { TVsScreen } from './components/screens/TVsScreen';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { SearchScreen } from './components/screens/SearchScreen';
-import { WatchingListScreen } from './components/screens/WatchingListScreen';
+import { TrendingByRegionScreen } from './components/screens/TrendingByRegionScreen';
 import { DetailScreen } from './components/screens/DetailScreen';
-import { ThemeProvider, useTheme } from './theme';
+import { colors, spacing } from './theme/simple';
+import { Ionicons } from '@expo/vector-icons';
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -23,7 +24,7 @@ type TabParamList = {
   TVs: undefined;
   Home: undefined;
   Search: undefined;
-  WatchingList: undefined;
+  Trending: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,28 +33,22 @@ const Tab = createBottomTabNavigator<TabParamList>();
 interface TabIconProps {
   focused: boolean;
   label: string;
-  icon: ReturnType<typeof require>;
+  icon: string;
+  iconFocused: string;
 }
 
-function TabIcon({ focused, label, icon }: TabIconProps) {
-  const { colors } = useTheme();
+function TabIcon({ focused, label, icon, iconFocused }: TabIconProps) {
   return (
     <View style={styles.tabIconContainer}>
-      <Image
-        source={icon}
-        resizeMode="contain"
-        style={[
-          styles.tabIcon,
-          { tintColor: focused ? colors.primary : colors.textTertiary, width: 20, height: 20 },
-        ]}
+      <Ionicons
+        name={focused ? iconFocused : icon}
+        size={24}
+        color={focused ? colors.primary : colors.textTertiary}
       />
       <Text
         style={[
           styles.tabLabel,
-          {
-            color: focused ? colors.primary : colors.textTertiary,
-            fontSize: 10,
-          },
+          { color: focused ? colors.primary : colors.textTertiary },
         ]}
       >
         {label}
@@ -63,21 +58,11 @@ function TabIcon({ focused, label, icon }: TabIconProps) {
 }
 
 function MainTabs() {
-  const { colors, spacing } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarStyle: [
-          styles.tabBar,
-          {
-            backgroundColor: colors.background,
-            borderTopColor: colors.border,
-            paddingBottom: spacing.sm,
-            paddingTop: spacing.xs,
-            height: spacing.lg + spacing.md,
-          },
-        ],
+        tabBarStyle: styles.tabBar,
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textTertiary,
@@ -88,7 +73,7 @@ function MainTabs() {
         component={MoviesScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Movies" icon={require('./assets/icons/Movies.png')} />
+            <TabIcon focused={focused} label="Movies" icon="film-outline" iconFocused="film" />
           ),
         }}
       />
@@ -97,7 +82,7 @@ function MainTabs() {
         component={TVsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="TVs" icon={require('./assets/icons/TVs.png')} />
+            <TabIcon focused={focused} label="TVs" icon="tv-outline" iconFocused="tv" />
           ),
         }}
       />
@@ -106,7 +91,7 @@ function MainTabs() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Home" icon={require('./assets/icons/Home.png')} />
+            <TabIcon focused={focused} label="Home" icon="home-outline" iconFocused="home" />
           ),
         }}
       />
@@ -115,16 +100,16 @@ function MainTabs() {
         component={SearchScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Search" icon={require('./assets/icons/Search.png')} />
+            <TabIcon focused={focused} label="Search" icon="search-outline" iconFocused="search" />
           ),
         }}
       />
       <Tab.Screen
-        name="WatchingList"
-        component={WatchingListScreen}
+        name="Trending"
+        component={TrendingByRegionScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Watchlist" icon={require('./assets/icons/WatchingList.png')} />
+            <TabIcon focused={focused} label="Global" icon="globe-outline" iconFocused="globe" />
           ),
         }}
       />
@@ -133,7 +118,16 @@ function MainTabs() {
 }
 
 function AppContent() {
-  const { colors } = useTheme();
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: 'Check out this movie/TV show on EntInfo app!',
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Could not share');
+    }
+  };
+
   return (
     <NavigationContainer>
       <StatusBar barStyle="default" />
@@ -144,12 +138,16 @@ function AppContent() {
           headerTitleStyle: { fontWeight: '600' },
           gestureEnabled: true,
           gestureDirection: 'horizontal',
+          presentation: 'modal',
         }}
       >
         <Stack.Screen
           name="MainTabs"
           component={MainTabs}
-          options={{ headerShown: false, gestureEnabled: false }}
+          options={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
         />
         <Stack.Screen
           name="Detail"
@@ -159,7 +157,12 @@ function AppContent() {
             headerBackTitle: 'Back',
             headerTransparent: true,
             headerTintColor: colors.textInverse,
-            cardStyle: { backgroundColor: colors.background },
+            headerRight: () => (
+              <TouchableOpacity onPress={handleShare} style={{ marginRight: 16 }}>
+                <Ionicons name="share-outline" size={24} color={colors.textInverse} />
+              </TouchableOpacity>
+            ),
+            contentStyle: { backgroundColor: colors.background },
           }}
         />
       </Stack.Navigator>
@@ -170,32 +173,39 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AppContent />
-      </ThemeProvider>
+      <AppContent />
     </QueryClientProvider>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    elevation: 0,
-    shadowOpacity: 0,
-    transform: [{ scale: 0.85 }],
-    marginBottom: -25,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    position: 'relative',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 88,
+    paddingBottom: 20,
+    paddingTop: 8,
+    paddingHorizontal: 16,
+    backgroundColor: colors.background,
   },
   tabIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingTop: 5,
-  },
-  tabIcon: {
-    width: 22,
-    height: 22,
+    paddingVertical: 4,
   },
   tabLabel: {
-    marginTop: 4,
+    marginTop: 2,
     fontWeight: '500',
+    fontSize: 10,
   },
 });

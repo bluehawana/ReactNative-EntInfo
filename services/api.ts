@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+import * as Localization from 'expo-localization';
 import {
   Movie,
   TVShow,
@@ -22,18 +23,74 @@ export const tmdbApi = axios.create({
   params: { api_key: API_KEY },
 });
 
-export const getTrending = () =>
-  tmdbApi.get<ApiResponse<TrendingItem>>('/trending/all/day');
+// Region detection from device locale
+export function getDeviceRegion(): string {
+  // Get device locale - supports both old and new expo-localization API
+  const locales = Localization.getLocales();
+  const locale = locales[0]?.languageTag || 'en-US';
+  // Extract country code from locale (e.g., "en-US" -> "US", "zh-CN" -> "CN")
+  const parts = locale.split('-');
+  if (parts.length >= 2) {
+    return parts[parts.length - 1].split('_')[0].toUpperCase();
+  }
+  return 'US';
+}
 
-export const getPopularMovies = () =>
-  tmdbApi.get<ApiResponse<Movie>>('/movie/popular', {
-    params: { language: 'en-US', page: 1 },
+// Popular regions for trending content
+export const REGIONS = [
+  { code: 'US', name: 'United States', flag: '🇺🇸', language: 'en-US' },
+  { code: 'CN', name: 'China', flag: '🇨🇳', language: 'zh-CN' },
+  { code: 'IN', name: 'India', flag: '🇮🇳', language: 'hi-IN' },
+  { code: 'JP', name: 'Japan', flag: '🇯🇵', language: 'ja-JP' },
+  { code: 'KR', name: 'South Korea', flag: '🇰🇷', language: 'ko-KR' },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', language: 'en-GB' },
+  { code: 'FR', name: 'France', flag: '🇫🇷', language: 'fr-FR' },
+  { code: 'DE', name: 'Germany', flag: '🇩🇪', language: 'de-DE' },
+  { code: 'BR', name: 'Brazil', flag: '🇧🇷', language: 'pt-BR' },
+  { code: 'MX', name: 'Mexico', flag: '🇲🇽', language: 'es-MX' },
+  { code: 'ES', name: 'Spain', flag: '🇪🇸', language: 'es-ES' },
+  { code: 'IT', name: 'Italy', flag: '🇮🇹', language: 'it-IT' },
+  { code: 'AU', name: 'Australia', flag: '🇦🇺', language: 'en-AU' },
+  { code: 'CA', name: 'Canada', flag: '🇨🇦', language: 'en-CA' },
+  { code: 'SE', name: 'Sweden', flag: '🇸🇪', language: 'sv-SE' },
+];
+
+export function getRegionInfo(code: string) {
+  return REGIONS.find((r) => r.code === code) || REGIONS[0];
+}
+
+export const getTrending = (region?: string) =>
+  tmdbApi.get<ApiResponse<TrendingItem>>('/trending/all/day', {
+    params: { language: 'en-US', region },
   });
 
-export const getPopularTV = () =>
-  tmdbApi.get<ApiResponse<TVShow>>('/tv/popular', {
-    params: { language: 'en-US', page: 1 },
+export const getPopularMovies = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<Movie>>('/movie/popular', {
+    params: { language: regionInfo.language, page: 1, region },
   });
+};
+
+export const getNowPlayingMovies = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<Movie>>('/movie/now_playing', {
+    params: { language: regionInfo.language, page: 1, region },
+  });
+};
+
+export const getPopularTV = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<TVShow>>('/tv/popular', {
+    params: { language: regionInfo.language, page: 1, region },
+  });
+};
+
+export const getAiringTodayTV = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<TVShow>>('/tv/airing_today', {
+    params: { language: regionInfo.language, page: 1, region },
+  });
+};
 
 export const searchMovies = (query: string) =>
   tmdbApi.get<ApiResponse<Movie>>('/search/movie', {

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useThemeColors, useThemeSpacing, useThemeTypography, useThemeBorderRadius } from '../../theme/ThemeContext';
+import { colors, spacing, typography, borderRadius } from '../../theme/simple';
 import { PressableOpacity } from './PressableOpacity';
 
 export interface WatchlistButtonProps {
@@ -23,11 +23,6 @@ export function WatchlistButton({
   style,
   textStyle,
 }: WatchlistButtonProps) {
-  const colors = useThemeColors();
-  const spacing = useThemeSpacing();
-  const typography = useThemeTypography();
-  const borderRadius = useThemeBorderRadius();
-
   const sizeStyles = {
     small: {
       paddingHorizontal: spacing.md,
@@ -53,17 +48,7 @@ export function WatchlistButton({
 
   return (
     <PressableOpacity
-      style={[
-        styles.button,
-        {
-          paddingHorizontal: sizeStyle.paddingHorizontal,
-          paddingVertical: sizeStyle.paddingVertical,
-          backgroundColor: inWatchlist ? colors.primary : 'transparent',
-          borderColor: colors.primary,
-          borderRadius: borderRadius.button,
-        },
-        style,
-      ]}
+      style={styles.button}
       onPress={onToggle}
       activeOpacity={0.7}
       hapticFeedback
@@ -95,6 +80,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
+    backgroundColor: 'transparent',
+    borderColor: colors.primary,
+    borderRadius: borderRadius.button,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   content: {
     flexDirection: 'row',

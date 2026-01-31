@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useThemeColors, useThemeSpacing, useThemeTypography, useThemeBorderRadius } from '../../theme/ThemeContext';
+import { colors, spacing, typography, borderRadius } from '../../theme/simple';
 
 export interface GenrePillProps {
   genre: string;
@@ -15,11 +15,6 @@ export interface GenrePillProps {
 }
 
 export function GenrePill({ genre, style, textStyle, size = 'medium' }: GenrePillProps) {
-  const colors = useThemeColors();
-  const spacing = useThemeSpacing();
-  const typography = useThemeTypography();
-  const borderRadius = useThemeBorderRadius();
-
   const sizeStyles = {
     small: {
       paddingHorizontal: spacing.sm,

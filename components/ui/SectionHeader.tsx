@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useThemeColors, useThemeSpacing, useThemeTypography } from '../../theme/ThemeContext';
+import { colors, spacing, typography } from '../../theme/simple';
 import { PressableOpacity } from './PressableOpacity';
 
 export interface SectionHeaderProps {
@@ -25,10 +25,6 @@ export function SectionHeader({
   titleStyle,
   actionStyle,
 }: SectionHeaderProps) {
-  const colors = useThemeColors();
-  const spacing = useThemeSpacing();
-  const typography = useThemeTypography();
-
   return (
     <View style={[styles.container, { paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, style]}>
       <Text style={[{ ...typography.title3, color: colors.text }, titleStyle]}>{title}</Text>

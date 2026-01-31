@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useThemeColors, useThemeSpacing, useThemeTypography } from '../../theme/ThemeContext';
+import { colors, spacing, typography } from '../../theme/simple';
 
 export interface RatingBadgeProps {
   rating: number;
@@ -24,10 +24,6 @@ export function RatingBadge({
   textStyle,
   showDecimal = true,
 }: RatingBadgeProps) {
-  const colors = useThemeColors();
-  const spacing = useThemeSpacing();
-  const typography = useThemeTypography();
-
   const displayRating = showDecimal ? rating.toFixed(1) : Math.round(rating);
   const percentage = (rating / maxRating) * 100;
 

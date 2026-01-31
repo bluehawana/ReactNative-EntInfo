@@ -8,7 +8,7 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
     <View style={styles.container}>
       <Text style={[styles.message, { color: colors.error, ...typography.body }]}>{message}</Text>
       {onRetry && (
-        <PressableOpacity style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={onRetry} activeOpacity={0.8}>
+        <PressableOpacity style={styles.retryButton} onPress={onRetry} activeOpacity={0.8}>
           <Text style={[styles.retryText, { color: colors.textInverse, ...typography.callout }]}>Retry</Text>
         </PressableOpacity>
       )}
@@ -19,6 +19,6 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
   message: { textAlign: 'center', marginBottom: 16 },
-  retryButton: { paddingHorizontal: 24, paddingVertical: 8, borderRadius: 8 },
+  retryButton: { paddingHorizontal: 24, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.primary },
   retryText: { fontWeight: '600' },
 });

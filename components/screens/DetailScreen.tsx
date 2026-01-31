@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
-import { IMAGE_BASE_LARGE, PROFILE_BASE } from '../../services/api';
+import { IMAGE_BASE_LARGE, PROFILE_BASE, streamingProviders } from '../../services/api';
 import { colors, spacing, typography } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
@@ -45,6 +45,44 @@ export function DetailScreen() {
     }
   };
 
+  const handleProviderPress = async (providerId: number) => {
+    const provider = streamingProviders[providerId];
+    if (!provider) return;
+
+    const title = 'title' in details ? details.title : details.name;
+
+    // Try to open the app
+    const { Linking } = await import('react-native');
+    const deepLink = `${provider.scheme}search/${encodeURIComponent(title)}`;
+
+    try {
+      const canOpen = await Linking.canOpenURL(deepLink);
+      if (canOpen) {
+        await Linking.openURL(deepLink);
+      } else {
+        // App not installed - open web version
+        Alert.alert(
+          provider.name,
+          `Open ${provider.name} website to watch "${title}"?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Website', onPress: () => Linking.openURL(`${provider.webUrl}/search?q=${encodeURIComponent(title)}`) },
+          ]
+        );
+      }
+    } catch (err) {
+      // Fallback to web
+      Alert.alert(
+        provider.name,
+        `Open ${provider.name} website to watch "${title}"?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Website', onPress: () => Linking.openURL(`${provider.webUrl}/search?q=${encodeURIComponent(title)}`) },
+        ]
+      );
+    }
+  };
+
   if (isLoading) return <View style={[styles.container, { backgroundColor: colors.background }]}><StatusBar barStyle="light-content" /><LoadingSpinner /></View>;
   if (error || !details) return <View style={[styles.container, { backgroundColor: colors.background }]}><StatusBar barStyle="light-content" /><ErrorView message="Failed to load details" onRetry={refetch} /></View>;
 
@@ -74,7 +112,7 @@ export function DetailScreen() {
       <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.3)' }]} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
       </TouchableOpacity>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing.xl }]}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing.xl + 60 }]}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text, ...typography.headline }]}>{title}</Text>
           <View style={styles.metaRow}>
@@ -115,7 +153,38 @@ export function DetailScreen() {
         {(flatrateProviders.length > 0 || usProviders?.link) && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text, ...typography.title }]}>Where to Watch</Text>
-            <View style={styles.providerRow}>{flatrateProviders.map((provider) => (<Image key={provider.provider_id} source={{ uri: `${PROFILE_BASE}${provider.logo_path}` }} style={[styles.providerLogo, { backgroundColor: colors.surface }]} />))}</View>
+            <Text style={[styles.providerHint, { color: colors.textTertiary }]}>Tap to open in app or website</Text>
+            <View style={styles.providerRow}>
+              {flatrateProviders.map((provider) => {
+                const providerInfo = streamingProviders[provider.provider_id];
+                return (
+                  <TouchableOpacity
+                    key={provider.provider_id}
+                    style={styles.providerTouchable}
+                    onPress={() => handleProviderPress(provider.provider_id)}
+                    activeOpacity={0.7}
+                  >
+                    <Image
+                      source={{ uri: `${PROFILE_BASE}${provider.logo_path}` }}
+                      style={[styles.providerLogo, { backgroundColor: colors.surface }]}
+                    />
+                    <Text style={[styles.providerName, { color: colors.textSecondary }]} numberOfLines={1}>
+                      {provider.provider_name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            {usProviders?.link && (
+              <TouchableOpacity
+                style={styles.webLinkButton}
+                onPress={() => Linking.openURL(usProviders.link)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="open-outline" size={18} color={colors.primary} />
+                <Text style={[styles.webLinkText, { color: colors.primary }]}>View all watching options</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         <View style={{ height: spacing.xl }} />
@@ -156,6 +225,11 @@ const styles = StyleSheet.create({
   castPlaceholder: { justifyContent: 'center', alignItems: 'center' },
   castName: { marginTop: 6, fontWeight: '500', fontSize: 12, height: 36 },
   castCharacter: { marginTop: 2, fontSize: 11 },
-  providerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  providerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  providerTouchable: { alignItems: 'center', width: 72 },
   providerLogo: { width: 50, height: 50, borderRadius: 8 },
+  providerName: { fontSize: 11, marginTop: 4, textAlign: 'center', maxWidth: 72 },
+  providerHint: { fontSize: 12, marginBottom: 8 },
+  webLinkButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 16, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, backgroundColor: colors.surfaceSecondary },
+  webLinkText: { marginLeft: 8, fontWeight: '500', fontSize: 14 },
 });
