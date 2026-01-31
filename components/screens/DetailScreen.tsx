@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { IMAGE_BASE_LARGE, PROFILE_BASE } from '../../services/api';
@@ -24,6 +25,7 @@ export function DetailScreen() {
   const { data: inWatchlist } = useIsInWatchlist(id, mediaType);
   const addToWatchlist = useAddToWatchlist();
   const removeFromWatchlist = useRemoveFromWatchlist();
+  const insets = useSafeAreaInsets();
 
   // Apple TV-style zoom animation
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -51,36 +53,66 @@ export function DetailScreen() {
     if (!provider) return;
 
     const title = 'title' in details ? details.title : details.name;
-
-    // Try to open the app
+    const encodedTitle = encodeURIComponent(title);
     const { Linking } = await import('react-native');
-    const deepLink = `${provider.scheme}search/${encodeURIComponent(title)}`;
+
+    // Build deep link based on provider
+    let deepLink = '';
+    switch (providerId) {
+      case 350: // Apple TV+
+        deepLink = `tvapp://watch?contentType=movie&contentId=${encodedTitle}`;
+        break;
+      case 8: // Netflix
+        deepLink = `nflx://search?query=${encodedTitle}`;
+        break;
+      case 391: // Disney+
+        deepLink = `disneyplus://search?query=${encodedTitle}`;
+        break;
+      case 384: // HBO Max
+        deepLink = `max://search/${encodedTitle}`;
+        break;
+      case 119: // Prime Video
+        deepLink = `primevideo://search?keyword=${encodedTitle}`;
+        break;
+      case 15: // Hulu
+        deepLink = `hulu://search/${encodedTitle}`;
+        break;
+      case 531: // Paramount+
+        deepLink = `paramountplus://search/${encodedTitle}`;
+        break;
+      case 498: // Peacock
+        deepLink = `peacocktv://search/${encodedTitle}`;
+        break;
+      case 247: // YouTube
+        deepLink = `youtube://results?search_query=${encodedTitle}`;
+        break;
+      case 726: // Crunchyroll
+        deepLink = `crunchyroll://search/${encodedTitle}`;
+        break;
+      default:
+        deepLink = `${provider.scheme}search/${encodedTitle}`;
+    }
+
+    const webUrl = `${provider.webUrl}/search?q=${encodedTitle}`;
 
     try {
-      const canOpen = await Linking.canOpenURL(deepLink);
-      if (canOpen) {
-        await Linking.openURL(deepLink);
-      } else {
-        // App not installed - open web version
+      // Try deep link first
+      await Linking.openURL(deepLink);
+    } catch {
+      // Deep link failed, try web URL
+      try {
+        await Linking.openURL(webUrl);
+      } catch (err) {
+        // Both failed, show alert
         Alert.alert(
           provider.name,
-          `Open ${provider.name} website to watch "${title}"?`,
+          `Unable to open ${provider.name}. Would you like to open the website?`,
           [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Website', onPress: () => Linking.openURL(`${provider.webUrl}/search?q=${encodeURIComponent(title)}`) },
+            { text: 'Open Website', onPress: () => Linking.openURL(webUrl) },
           ]
         );
       }
-    } catch (err) {
-      // Fallback to web
-      Alert.alert(
-        provider.name,
-        `Open ${provider.name} website to watch "${title}"?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Website', onPress: () => Linking.openURL(`${provider.webUrl}/search?q=${encodeURIComponent(title)}`) },
-        ]
-      );
     }
   };
 
@@ -110,9 +142,11 @@ export function DetailScreen() {
         )}
         <LinearGradient colors={['transparent', 'rgba(0,0,0,0.6)', colors.background]} style={styles.backdropOverlay} />
       </View>
-      <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.3)' }]} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
-      </TouchableOpacity>
+      <SafeAreaView style={[styles.backButtonContainer, { top: insets.top }]}>
+        <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.3)' }]} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
+        </TouchableOpacity>
+      </SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing.xl + 60 }]}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text, ...typography.headline }]}>{title}</Text>
@@ -186,7 +220,8 @@ const styles = StyleSheet.create({
   backdropContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: 280 },
   backdrop: { width: '100%', height: 280 },
   backdropOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  backButton: { position: 'absolute', top: Platform.OS === 'ios' ? 50 : 40, left: 16, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
+  backButtonContainer: { position: 'absolute', left: 16, zIndex: 1 },
+  backButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { paddingTop: 240 },
   header: { paddingHorizontal: 16, paddingBottom: 8 },
   title: { marginBottom: 8 },
