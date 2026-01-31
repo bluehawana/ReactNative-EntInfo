@@ -54,6 +54,14 @@ export function DetailScreen() {
 
     const title = 'title' in details ? details.title : details.name;
     const encodedTitle = encodeURIComponent(title);
+    const webUrl = `${provider.webUrl}/search?q=${encodedTitle}`;
+
+    // On web, always use web URL (deep links don't work)
+    if (Platform.OS === 'web') {
+      window.open(webUrl, '_blank');
+      return;
+    }
+
     const { Linking } = await import('react-native');
 
     // Build deep link based on provider
@@ -93,26 +101,18 @@ export function DetailScreen() {
         deepLink = `${provider.scheme}search/${encodedTitle}`;
     }
 
-    const webUrl = `${provider.webUrl}/search?q=${encodedTitle}`;
-
+    // On native, try deep link first, fall back to web
     try {
-      // Try deep link first
-      await Linking.openURL(deepLink);
-    } catch {
-      // Deep link failed, try web URL
-      try {
+      const canOpen = await Linking.canOpenURL(deepLink);
+      if (canOpen) {
+        await Linking.openURL(deepLink);
+      } else {
+        // App not installed, open web
         await Linking.openURL(webUrl);
-      } catch (err) {
-        // Both failed, show alert
-        Alert.alert(
-          provider.name,
-          `Unable to open ${provider.name}. Would you like to open the website?`,
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Website', onPress: () => Linking.openURL(webUrl) },
-          ]
-        );
       }
+    } catch {
+      // Failed, open web
+      await Linking.openURL(webUrl);
     }
   };
 
