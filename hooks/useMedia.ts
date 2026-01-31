@@ -8,6 +8,8 @@ import {
   getTrending,
   getPopularMovies,
   getPopularTV,
+  getTopRatedMovies,
+  getTopRatedTV,
   searchMulti,
   getMovieDetails,
   getTVDetails,
@@ -74,6 +76,36 @@ export function usePopularTV(page: number = 1) {
       return data.results;
     },
     staleTime: 15 * 60 * 1000,
+  });
+}
+
+/**
+ * Hook to fetch top rated movies
+ * @returns Query result with top rated movies
+ */
+export function useTopRatedMovies() {
+  return useQuery({
+    queryKey: ['topRatedMovies'],
+    queryFn: async () => {
+      const { data } = await getTopRatedMovies();
+      return data.results;
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes for top rated
+  });
+}
+
+/**
+ * Hook to fetch top rated TV shows
+ * @returns Query result with top rated TV shows
+ */
+export function useTopRatedTV() {
+  return useQuery({
+    queryKey: ['topRatedTV'],
+    queryFn: async () => {
+      const { data } = await getTopRatedTV();
+      return data.results;
+    },
+    staleTime: 30 * 60 * 1000,
   });
 }
 

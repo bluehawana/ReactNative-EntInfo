@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Text, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSearch } from '../../hooks/useMedia';
 import { colors, spacing } from '../../theme/simple';
 import { MediaCard } from '../ui/MediaCard';
@@ -13,6 +14,7 @@ const SEARCH_DEBOUNCE_MS = 500;
 export function SearchScreen() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,9 +28,13 @@ export function SearchScreen() {
   const handleClear = () => setQuery('');
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.searchContainer, { padding: spacing.md }]}>
-        <SearchBar value={query} onChangeText={setQuery} placeholder="Search movies and TV shows..." onClear={handleClear} autoFocus />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <Text style={styles.headerTitle}>Search</Text>
+      </View>
+      <View style={styles.searchContainer}>
+        <SearchBar value={query} onChangeText={setQuery} placeholder="Search movies and TV shows..." onClear={handleClear} />
       </View>
 
       {isLoading && query.length > 0 ? (
@@ -42,15 +48,15 @@ export function SearchScreen() {
           numColumns={2}
           columnWrapperStyle={styles.row}
           renderItem={({ item }) => <MediaCard media={item} />}
-          contentContainerStyle={[styles.contentContainer, { paddingBottom: spacing.lg }]}
+          contentContainerStyle={[styles.contentContainer, { paddingBottom: 100 }]}
           showsVerticalScrollIndicator={false}
         />
       ) : debouncedQuery.length > 0 ? (
-        <EmptyState message="No results found" icon="search-outline" />
+        <EmptyState message="No results found" />
       ) : (
         <View style={styles.emptyContainer}>
           <Ionicons name="search" size={48} color={colors.textTertiary} />
-          <EmptyState message="Search for movies and TV shows" />
+          <Text style={styles.emptyText}>Search for movies and TV shows</Text>
         </View>
       )}
     </View>
@@ -58,9 +64,39 @@ export function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  searchContainer: { paddingBottom: 0 },
-  contentContainer: { paddingHorizontal: 8 },
-  row: { justifyContent: 'space-around' },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  contentContainer: {
+    paddingHorizontal: 8,
+  },
+  row: {
+    justifyContent: 'space-around',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
 });

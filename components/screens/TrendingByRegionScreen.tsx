@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTrendingByRegion } from '../../hooks/useTrendingByRegion';
 import { colors, spacing } from '../../theme/simple';
 import { MediaCard } from '../ui/MediaCard';
@@ -16,6 +17,7 @@ export function TrendingByRegionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { regions, selectedRegion, setSelectedRegion, currentRegion, movies, tvs, isLoading, error, refetch } = useTrendingByRegion();
   const [activeTab, setActiveTab] = useState<'movies' | 'tvs'>('movies');
+  const insets = useSafeAreaInsets();
 
   const items = activeTab === 'movies' ? movies : tvs;
 
@@ -32,11 +34,12 @@ export function TrendingByRegionScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>What's Trending</Text>
-        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <Text style={styles.headerTitle}>What's Trending</Text>
+        <Text style={styles.headerSubtitle}>
           {currentRegion.flag} {currentRegion.name} • {activeTab === 'movies' ? 'In Theaters' : 'Airing Today'}
         </Text>
       </View>
@@ -107,7 +110,7 @@ export function TrendingByRegionScreen() {
           renderItem={({ item }) => (
             <MediaCard media={item} mediaType={activeTab === 'movies' ? 'movie' : 'tv'} />
           )}
-          contentContainerStyle={[styles.contentContainer, { paddingBottom: spacing.lg }]}
+          contentContainerStyle={styles.contentContainer}
           refreshControl={
             <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
           }
@@ -121,18 +124,69 @@ export function TrendingByRegionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { paddingHorizontal: 16, paddingTop: spacing.lg + 20, paddingBottom: spacing.sm },
-  headerTitle: { fontSize: 28, fontWeight: '700' },
-  headerSubtitle: { fontSize: 15, marginTop: 2 },
-  regionSelector: { paddingVertical: spacing.sm },
-  regionList: { paddingHorizontal: 16, gap: 8 },
-  regionItem: { alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 20, backgroundColor: colors.surfaceSecondary, minWidth: 48 },
-  regionFlag: { fontSize: 18 },
-  regionName: { fontSize: 10, fontWeight: '600', marginTop: 2 },
-  tabContainer: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
-  tab: { flex: 1, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.surfaceSecondary, alignItems: 'center' },
-  tabText: { fontSize: 14, fontWeight: '600' },
-  contentContainer: { paddingHorizontal: 8 },
-  row: { justifyContent: 'space-around' },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: spacing.sm,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: 15,
+    marginTop: 2,
+    color: colors.textSecondary,
+  },
+  regionSelector: {
+    paddingVertical: spacing.sm,
+  },
+  regionList: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  regionItem: {
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: colors.surfaceSecondary,
+    minWidth: 48,
+  },
+  regionFlag: {
+    fontSize: 18,
+  },
+  regionName: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceSecondary,
+    alignItems: 'center',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  contentContainer: {
+    paddingHorizontal: 8,
+    paddingBottom: 100,
+  },
+  row: {
+    justifyContent: 'space-around',
+  },
 });

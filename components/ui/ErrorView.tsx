@@ -17,7 +17,7 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, backgroundColor: colors.background },
   message: { textAlign: 'center', marginBottom: 16 },
   retryButton: { paddingHorizontal: 24, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.primary },
   retryText: { fontWeight: '600' },

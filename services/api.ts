@@ -138,3 +138,18 @@ export const getMovieWatchProviders = (id: number) =>
 
 export const getTVWatchProviders = (id: number) =>
   tmdbApi.get<WatchProvidersResponse>(`/tv/${id}/watch/providers`);
+
+// Top rated movies and TV shows
+export const getTopRatedMovies = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<Movie>>('/movie/top_rated', {
+    params: { language: regionInfo.language, page: 1, region },
+  });
+};
+
+export const getTopRatedTV = (region?: string) => {
+  const regionInfo = getRegionInfo(region || 'US');
+  return tmdbApi.get<ApiResponse<TVShow>>('/tv/top_rated', {
+    params: { language: regionInfo.language, page: 1, region },
+  });
+};

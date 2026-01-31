@@ -13,7 +13,7 @@ export function EmptyState({ message, subMessage, icon }: { message: string; sub
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, backgroundColor: colors.background },
   iconContainer: { marginBottom: 16 },
   message: { textAlign: 'center', marginBottom: 8 },
   subMessage: { textAlign: 'center', marginTop: 4 },

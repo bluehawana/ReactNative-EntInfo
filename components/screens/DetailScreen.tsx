@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking, SafeAreaView } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,71 +49,80 @@ export function DetailScreen() {
   };
 
   const handleProviderPress = async (providerId: number) => {
+    if (!details) return;
     const provider = streamingProviders[providerId];
-    if (!provider) return;
 
     const title = 'title' in details ? details.title : details.name;
     const encodedTitle = encodeURIComponent(title);
-    const webUrl = `${provider.webUrl}/search?q=${encodedTitle}`;
+    const webUrl = provider?.webUrl
+      ? `${provider.webUrl}/search?q=${encodedTitle}`
+      : `https://www.google.com/search?q=${encodeURIComponent(title + ' ' + (provider?.name || 'streaming'))}`;
 
-    // On web, always use web URL (deep links don't work)
+    // On web, always use web URL directly
     if (Platform.OS === 'web') {
-      window.open(webUrl, '_blank');
+      window.open(webUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
-    const { Linking } = await import('react-native');
+    const { Linking } = require('react-native');
 
     // Build deep link based on provider
     let deepLink = '';
-    switch (providerId) {
-      case 350: // Apple TV+
-        deepLink = `tvapp://watch?contentType=movie&contentId=${encodedTitle}`;
-        break;
-      case 8: // Netflix
-        deepLink = `nflx://search?query=${encodedTitle}`;
-        break;
-      case 391: // Disney+
-        deepLink = `disneyplus://search?query=${encodedTitle}`;
-        break;
-      case 384: // HBO Max
-        deepLink = `max://search/${encodedTitle}`;
-        break;
-      case 119: // Prime Video
-        deepLink = `primevideo://search?keyword=${encodedTitle}`;
-        break;
-      case 15: // Hulu
-        deepLink = `hulu://search/${encodedTitle}`;
-        break;
-      case 531: // Paramount+
-        deepLink = `paramountplus://search/${encodedTitle}`;
-        break;
-      case 498: // Peacock
-        deepLink = `peacocktv://search/${encodedTitle}`;
-        break;
-      case 247: // YouTube
-        deepLink = `youtube://results?search_query=${encodedTitle}`;
-        break;
-      case 726: // Crunchyroll
-        deepLink = `crunchyroll://search/${encodedTitle}`;
-        break;
-      default:
-        deepLink = `${provider.scheme}search/${encodedTitle}`;
+    if (provider) {
+      switch (providerId) {
+        case 350: // Apple TV+
+          deepLink = `tvapp://watch?contentType=movie&contentId=${encodedTitle}`;
+          break;
+        case 8: // Netflix
+          deepLink = `nflx://search?query=${encodedTitle}`;
+          break;
+        case 391: // Disney+
+          deepLink = `disneyplus://search?query=${encodedTitle}`;
+          break;
+        case 384: // HBO Max
+          deepLink = `max://search/${encodedTitle}`;
+          break;
+        case 119: // Prime Video
+          deepLink = `primevideo://search?keyword=${encodedTitle}`;
+          break;
+        case 15: // Hulu
+          deepLink = `hulu://search/${encodedTitle}`;
+          break;
+        case 531: // Paramount+
+          deepLink = `paramountplus://search/${encodedTitle}`;
+          break;
+        case 498: // Peacock
+          deepLink = `peacocktv://search/${encodedTitle}`;
+          break;
+        case 247: // YouTube
+          deepLink = `youtube://results?search_query=${encodedTitle}`;
+          break;
+        case 726: // Crunchyroll
+          deepLink = `crunchyroll://search/${encodedTitle}`;
+          break;
+        default:
+          // For unknown providers, construct a generic app URL
+          if (provider.scheme) {
+            deepLink = `${provider.scheme}search/${encodedTitle}`;
+          }
+      }
     }
 
     // On native, try deep link first, fall back to web
-    try {
-      const canOpen = await Linking.canOpenURL(deepLink);
-      if (canOpen) {
-        await Linking.openURL(deepLink);
-      } else {
-        // App not installed, open web
-        await Linking.openURL(webUrl);
+    if (deepLink) {
+      try {
+        const canOpen = await Linking.canOpenURL(deepLink);
+        if (canOpen) {
+          await Linking.openURL(deepLink);
+          return;
+        }
+      } catch {
+        // Ignore errors and fall through to web
       }
-    } catch {
-      // Failed, open web
-      await Linking.openURL(webUrl);
     }
+
+    // Fallback: open web URL in browser
+    await Linking.openURL(webUrl);
   };
 
   if (isLoading) return <View style={[styles.container, { backgroundColor: colors.background }]}><StatusBar barStyle="light-content" /><LoadingSpinner /></View>;
@@ -128,6 +137,15 @@ export function DetailScreen() {
   const topCast = credits?.cast?.slice(0, 10) || [];
   const usProviders = providers?.results?.US;
   const flatrateProviders = usProviders?.flatrate || [];
+  const rentProviders = usProviders?.rent || [];
+  const buyProviders = usProviders?.buy || [];
+  // Deduplicate providers by provider_id
+  const seenIds = new Set<number>();
+  const allProviders = [...flatrateProviders, ...rentProviders, ...buyProviders].filter((provider) => {
+    if (seenIds.has(provider.provider_id)) return false;
+    seenIds.add(provider.provider_id);
+    return true;
+  });
 
   const getRatingColor = (r: number) => r >= 7 ? colors.success : r >= 5 ? colors.warning : colors.error;
 
@@ -142,11 +160,11 @@ export function DetailScreen() {
         )}
         <LinearGradient colors={['transparent', 'rgba(0,0,0,0.6)', colors.background]} style={styles.backdropOverlay} />
       </View>
-      <SafeAreaView style={[styles.backButtonContainer, { top: insets.top }]}>
+      <View style={[styles.backButtonSafeArea, { paddingTop: insets.top }]}>
         <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.3)' }]} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing.xl + 60 }]}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text, ...typography.headline }]}>{title}</Text>
@@ -175,8 +193,8 @@ export function DetailScreen() {
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text, ...typography.title }]}>Cast</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.castContainer}>
-              {topCast.map((actor) => (
-                <TouchableOpacity key={actor.id} style={styles.castCard} activeOpacity={0.7}>
+              {topCast.map((actor, index) => (
+                <TouchableOpacity key={`cast-${actor.id}-${index}`} style={styles.castCard} activeOpacity={0.7}>
                   {actor.profile_path ? <Image source={{ uri: `${PROFILE_BASE}${actor.profile_path}` }} style={[styles.castImage, { backgroundColor: colors.borderLight }]} /> : <View style={[styles.castImage, styles.castPlaceholder, { backgroundColor: colors.borderLight }]}><Ionicons name="person-outline" size={24} color={colors.textTertiary} /></View>}
                   <Text style={[styles.castName, { color: colors.text }]} numberOfLines={2}>{actor.name}</Text>
                   <Text style={[styles.castCharacter, { color: colors.textTertiary }]} numberOfLines={1}>{actor.character}</Text>
@@ -185,14 +203,14 @@ export function DetailScreen() {
             </ScrollView>
           </View>
         )}
-        {(flatrateProviders.length > 0) && (
+        {(allProviders.length > 0) && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text, ...typography.title }]}>Where to Watch</Text>
-            <Text style={[styles.providerHint, { color: colors.textTertiary }]}>Tap to open in app</Text>
+            <Text style={[styles.providerHint, { color: colors.textTertiary }]}>Tap to open</Text>
             <View style={styles.providerRow}>
-              {flatrateProviders.map((provider) => (
+              {allProviders.map((provider, index) => (
                 <TouchableOpacity
-                  key={provider.provider_id}
+                  key={`provider-${provider.provider_id}-${index}`}
                   style={styles.providerTouchable}
                   onPress={() => handleProviderPress(provider.provider_id)}
                   activeOpacity={0.7}
@@ -220,8 +238,8 @@ const styles = StyleSheet.create({
   backdropContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: 280 },
   backdrop: { width: '100%', height: 280 },
   backdropOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  backButtonContainer: { position: 'absolute', left: 16, zIndex: 1 },
-  backButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+  backButtonSafeArea: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 },
+  backButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   scrollContent: { paddingTop: 240 },
   header: { paddingHorizontal: 16, paddingBottom: 8 },
   title: { marginBottom: 8 },

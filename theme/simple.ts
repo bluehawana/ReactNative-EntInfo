@@ -6,23 +6,23 @@
 import { TextStyle, ViewStyle } from 'react-native';
 
 export const colors = {
-  primary: '#007AFF',
-  secondary: '#5856D6',
+  primary: '#00A8E1', // Prime Video blue
+  secondary: '#1A98FF',
   accent: '#FF9500',
-  success: '#34C759',
-  warning: '#FFCC00',
-  error: '#FF3B30',
+  success: '#00C853',
+  warning: '#FFD600',
+  error: '#FF5252',
   info: '#5AC8FA',
-  background: '#FFFFFF',
-  backgroundSecondary: '#F5F5F7',
-  surface: '#F9F9F9',
-  surfaceSecondary: '#F0F0F2',
-  text: '#000000',
-  textSecondary: '#666666',
-  textTertiary: '#8E8E93',
+  background: '#0F171E', // Dark background like Prime Video
+  backgroundSecondary: '#1A242F',
+  surface: '#1A242F',
+  surfaceSecondary: '#232F3E',
+  text: '#FFFFFF',
+  textSecondary: '#8D9BA8',
+  textTertiary: '#5A6A7A',
   textInverse: '#FFFFFF',
-  border: '#C6C6C8',
-  borderLight: '#E5E5EA',
+  border: '#2A3A4A',
+  borderLight: '#1F2F3F',
 };
 
 export const spacing = {

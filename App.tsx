@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image, StyleSheet, StatusBar, Share, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Share, Alert, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -30,50 +30,36 @@ type TabParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
-interface TabIconProps {
-  focused: boolean;
-  label: string;
-  icon: string;
-  iconFocused: string;
-}
-
-function TabIcon({ focused, label, icon, iconFocused }: TabIconProps) {
-  return (
-    <View style={styles.tabIconContainer}>
-      <Ionicons
-        name={focused ? iconFocused : icon}
-        size={24}
-        color={focused ? colors.primary : colors.textTertiary}
-      />
-      <Text
-        style={[
-          styles.tabLabel,
-          { color: focused ? colors.primary : colors.textTertiary },
-        ]}
-      >
-        {label}
-      </Text>
-    </View>
-  );
-}
-
 function MainTabs() {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       screenOptions={{
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabLabel,
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textTertiary,
       }}
     >
       <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Movies"
         component={MoviesScreen}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Movies" icon="film-outline" iconFocused="film" />
+          tabBarLabel: 'Movies',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'film' : 'film-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -81,17 +67,9 @@ function MainTabs() {
         name="TVs"
         component={TVsScreen}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="TVs" icon="tv-outline" iconFocused="tv" />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Home" icon="home-outline" iconFocused="home" />
+          tabBarLabel: 'TV',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'tv' : 'tv-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -99,8 +77,9 @@ function MainTabs() {
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Search" icon="search-outline" iconFocused="search" />
+          tabBarLabel: 'Search',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'search' : 'search-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -108,8 +87,9 @@ function MainTabs() {
         name="Trending"
         component={TrendingByRegionScreen}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Global" icon="globe-outline" iconFocused="globe" />
+          tabBarLabel: 'Global',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'globe' : 'globe-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -129,8 +109,26 @@ function AppContent() {
   };
 
   return (
-    <NavigationContainer>
-      <StatusBar barStyle="default" />
+    <NavigationContainer
+      theme={{
+        dark: true,
+        colors: {
+          primary: colors.primary,
+          background: colors.background,
+          card: colors.background,
+          text: colors.text,
+          border: colors.border,
+          notification: colors.primary,
+        },
+        fonts: {
+          regular: { fontFamily: 'System', fontWeight: '400' },
+          medium: { fontFamily: 'System', fontWeight: '500' },
+          bold: { fontFamily: 'System', fontWeight: '700' },
+          heavy: { fontFamily: 'System', fontWeight: '900' },
+        },
+      }}
+    >
+      <StatusBar barStyle="light-content" />
       <Stack.Navigator
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
@@ -180,32 +178,22 @@ export default function App() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    position: 'relative',
+    elevation: 0,
+    shadowColor: 'transparent',
+    borderTopWidth: 0,
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 88,
-    paddingBottom: 20,
+    height: 90,
+    paddingBottom: 28,
     paddingTop: 8,
-    paddingHorizontal: 16,
-    backgroundColor: colors.background,
-  },
-  tabIconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(15,23,30,0.98)',
   },
   tabLabel: {
-    marginTop: 2,
-    fontWeight: '500',
     fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
   },
 });
