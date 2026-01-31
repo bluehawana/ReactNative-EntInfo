@@ -1,36 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, FlatList, RefreshControl, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTrendingByRegion } from '../../hooks/useTrendingByRegion';
-import { IMAGE_BASE, REGIONS } from '../../services/api';
-import { colors, spacing, typography } from '../../theme/simple';
+import { colors, spacing } from '../../theme/simple';
+import { MediaCard } from '../ui/MediaCard';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { ErrorView } from '../ui/ErrorView';
+import { EmptyState } from '../ui/EmptyState';
 import { Ionicons } from '@expo/vector-icons';
 
 type RootStackParamList = { Detail: { id: number; mediaType: 'movie' | 'tv' } };
 
 export function TrendingByRegionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { regions, selectedRegion, setSelectedRegion, currentRegion, movies, tvs, isLoading } = useTrendingByRegion();
+  const { regions, selectedRegion, setSelectedRegion, currentRegion, movies, tvs, isLoading, error, refetch } = useTrendingByRegion();
   const [activeTab, setActiveTab] = useState<'movies' | 'tvs'>('movies');
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-  }, [selectedRegion, activeTab]);
-
-  const handleItemPress = (item: any, mediaType: 'movie' | 'tv') => {
-    navigation.navigate('Detail', { id: item.id, mediaType });
-  };
-
-  if (isLoading) return <View style={[styles.container, { backgroundColor: colors.background }]}><LoadingSpinner /></View>;
 
   const items = activeTab === 'movies' ? movies : tvs;
 
+  const handleItemPress = (item: any) => {
+    navigation.navigate('Detail', { id: item.id, mediaType: activeTab === 'movies' ? 'movie' : 'tv' });
+  };
+
+  if (isLoading && items.length === 0) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorView message="Failed to load content" onRetry={refetch} />;
+  }
+
   return (
-    <Animated.View style={[styles.container, { backgroundColor: colors.background, opacity: fadeAnim }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>What's Trending</Text>
@@ -41,30 +43,34 @@ export function TrendingByRegionScreen() {
 
       {/* Region Selector */}
       <View style={styles.regionSelector}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regionList}>
-          {regions.map((region) => (
+        <FlatList
+          horizontal
+          data={regions}
+          keyExtractor={(item) => item.code}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.regionList}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              key={region.code}
               style={[
                 styles.regionItem,
-                selectedRegion === region.code && { backgroundColor: colors.primary },
+                selectedRegion === item.code && { backgroundColor: colors.primary },
               ]}
-              onPress={() => setSelectedRegion(region.code)}
+              onPress={() => setSelectedRegion(item.code)}
               activeOpacity={0.7}
             >
-              <Text style={styles.regionFlag}>{region.flag}</Text>
+              <Text style={styles.regionFlag}>{item.flag}</Text>
               <Text
                 style={[
                   styles.regionName,
-                  selectedRegion === region.code ? { color: colors.textInverse } : { color: colors.text },
+                  selectedRegion === item.code ? { color: colors.textInverse } : { color: colors.text },
                 ]}
                 numberOfLines={1}
               >
-                {region.code}
+                {item.code}
               </Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          )}
+        />
       </View>
 
       {/* Tab Switcher */}
@@ -85,55 +91,34 @@ export function TrendingByRegionScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        {items.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Ionicons name="film-outline" size={48} color={colors.textTertiary} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No {activeTab === 'movies' ? 'movies in theaters' : 'TV shows airing today'}</Text>
-            <Text style={[styles.emptyHint, { color: colors.textTertiary }]}>in {currentRegion.name}</Text>
-          </View>
-        ) : (
-          <View style={styles.gridContainer}>
-            {items.map((item, index) => (
-              <TouchableOpacity key={item.id} style={styles.card} onPress={() => handleItemPress(item, activeTab === 'movies' ? 'movie' : 'tv')} activeOpacity={0.7}>
-                <View style={styles.posterWrapper}>
-                  {item.poster_path ? (
-                    <Image
-                      source={{ uri: `${IMAGE_BASE}${item.poster_path}` }}
-                      style={styles.poster}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={[styles.poster, styles.posterPlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-                      <Ionicons name="image-outline" size={32} color={colors.textTertiary} />
-                    </View>
-                  )}
-                  <View style={styles.rankBadge}>
-                    <Text style={[styles.rankText, { color: colors.textInverse }]}>{index + 1}</Text>
-                  </View>
-                </View>
-                <View style={styles.cardContent}>
-                  <Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={2}>
-                    {activeTab === 'movies' ? item.title : item.name}
-                  </Text>
-                  <View style={styles.cardMeta}>
-                    <Ionicons name="star" size={12} color={colors.warning} />
-                    <Text style={[styles.cardRating, { color: colors.textSecondary }]}>{item.vote_average?.toFixed(1)}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-        <View style={{ height: spacing.xl }} />
-      </ScrollView>
-    </Animated.View>
+      {/* Content - Same as MoviesScreen */}
+      {items.length === 0 ? (
+        <EmptyState
+          icon={<Ionicons name="film-outline" size={48} color={colors.textTertiary} />}
+          message={`No ${activeTab === 'movies' ? 'movies in theaters' : 'TV shows airing today'}`}
+          subMessage={`in ${currentRegion.name}`}
+        />
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          renderItem={({ item }) => (
+            <MediaCard media={item} mediaType={activeTab === 'movies' ? 'movie' : 'tv'} />
+          )}
+          contentContainerStyle={[styles.contentContainer, { paddingBottom: spacing.lg }]}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
+          }
+          showsVerticalScrollIndicator={false}
+          onRefresh={refetch}
+          refreshing={isLoading}
+        />
+      )}
+    </View>
   );
 }
-
-const { width } = Dimensions.get('window');
-const cardWidth = (width - spacing.md * 3) / 2;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -148,19 +133,6 @@ const styles = StyleSheet.create({
   tabContainer: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
   tab: { flex: 1, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.surfaceSecondary, alignItems: 'center' },
   tabText: { fontSize: 14, fontWeight: '600' },
-  content: { paddingTop: spacing.md, paddingHorizontal: 16 },
-  emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.xl * 2 },
-  emptyText: { fontSize: 16, marginTop: 16 },
-  emptyHint: { fontSize: 14, marginTop: 4 },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  card: { width: cardWidth, marginBottom: spacing.md },
-  posterWrapper: { position: 'relative' },
-  poster: { width: cardWidth, height: cardWidth * 1.5, borderRadius: 12 },
-  posterPlaceholder: { justifyContent: 'center', alignItems: 'center' },
-  rankBadge: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
-  rankText: { fontSize: 14, fontWeight: '700' },
-  cardContent: { paddingTop: 8 },
-  cardTitle: { fontSize: 13, fontWeight: '600', height: 34 },
-  cardMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  cardRating: { fontSize: 12, marginLeft: 4 },
+  contentContainer: { paddingHorizontal: 8 },
+  row: { justifyContent: 'space-around' },
 });

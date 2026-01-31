@@ -4,7 +4,8 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
-import { IMAGE_BASE_LARGE, PROFILE_BASE, streamingProviders } from '../../services/api';
+import { IMAGE_BASE_LARGE, PROFILE_BASE } from '../../services/api';
+import { streamingProviders } from '../../services/streamingLinks';
 import { colors, spacing, typography } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
@@ -150,41 +151,28 @@ export function DetailScreen() {
             </ScrollView>
           </View>
         )}
-        {(flatrateProviders.length > 0 || usProviders?.link) && (
+        {(flatrateProviders.length > 0) && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text, ...typography.title }]}>Where to Watch</Text>
-            <Text style={[styles.providerHint, { color: colors.textTertiary }]}>Tap to open in app or website</Text>
+            <Text style={[styles.providerHint, { color: colors.textTertiary }]}>Tap to open in app</Text>
             <View style={styles.providerRow}>
-              {flatrateProviders.map((provider) => {
-                const providerInfo = streamingProviders[provider.provider_id];
-                return (
-                  <TouchableOpacity
-                    key={provider.provider_id}
-                    style={styles.providerTouchable}
-                    onPress={() => handleProviderPress(provider.provider_id)}
-                    activeOpacity={0.7}
-                  >
-                    <Image
-                      source={{ uri: `${PROFILE_BASE}${provider.logo_path}` }}
-                      style={[styles.providerLogo, { backgroundColor: colors.surface }]}
-                    />
-                    <Text style={[styles.providerName, { color: colors.textSecondary }]} numberOfLines={1}>
-                      {provider.provider_name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+              {flatrateProviders.map((provider) => (
+                <TouchableOpacity
+                  key={provider.provider_id}
+                  style={styles.providerTouchable}
+                  onPress={() => handleProviderPress(provider.provider_id)}
+                  activeOpacity={0.7}
+                >
+                  <Image
+                    source={{ uri: `${PROFILE_BASE}${provider.logo_path}` }}
+                    style={[styles.providerLogo, { backgroundColor: colors.surface }]}
+                  />
+                  <Text style={[styles.providerName, { color: colors.textSecondary }]} numberOfLines={1}>
+                    {provider.provider_name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-            {usProviders?.link && (
-              <TouchableOpacity
-                style={styles.webLinkButton}
-                onPress={() => Linking.openURL(usProviders.link)}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="open-outline" size={18} color={colors.primary} />
-                <Text style={[styles.webLinkText, { color: colors.primary }]}>View all watching options</Text>
-              </TouchableOpacity>
-            )}
           </View>
         )}
         <View style={{ height: spacing.xl }} />

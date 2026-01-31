@@ -16,13 +16,13 @@ export function useTrendingByRegion(initialRegion?: string) {
 
   const currentRegion = getRegionInfo(selectedRegion);
 
-  const { data: movies, isLoading: moviesLoading } = useQuery({
+  const moviesQuery = useQuery({
     queryKey: ['now-playing-movies', selectedRegion],
     queryFn: () => getNowPlayingMovies(selectedRegion),
     select: (response) => response.data.results.slice(0, 10),
   });
 
-  const { data: tvs, isLoading: tvsLoading } = useQuery({
+  const tvsQuery = useQuery({
     queryKey: ['airing-today-tv', selectedRegion],
     queryFn: () => getAiringTodayTV(selectedRegion),
     select: (response) => response.data.results.slice(0, 10),
@@ -33,9 +33,14 @@ export function useTrendingByRegion(initialRegion?: string) {
     selectedRegion,
     setSelectedRegion,
     currentRegion,
-    movies: movies || [],
-    tvs: tvs || [],
-    isLoading: moviesLoading || tvsLoading,
+    movies: moviesQuery.data || [],
+    tvs: tvsQuery.data || [],
+    isLoading: moviesQuery.isLoading || tvsQuery.isLoading,
+    error: moviesQuery.error || tvsQuery.error,
+    refetch: () => {
+      moviesQuery.refetch();
+      tvsQuery.refetch();
+    },
   };
 }
 
