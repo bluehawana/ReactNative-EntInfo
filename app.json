@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "EntInfo",
-    "slug": "EntInfo",
+    "name": "2watch",
+    "slug": "2watch",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,34 +17,59 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "supportsAppleTv": true,
+      "bundleIdentifier": "com.twowatch.app",
+      "buildNumber": "2",
+      "teamId": "B5627M73YT",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "entinfo"
-            ]
-          },
-          {
-            "CFBundleURLSchemes": [
-              "entinfo"
+              "2watch"
             ]
           }
+        ],
+        "UIRequiresFullScreen": false,
+        "UIAppSupportsHDR": true,
+        "UIUserInterfaceStyle": "Dark",
+        "NSCameraUsageDescription": "This app does not use the camera.",
+        "NSPhotoLibraryUsageDescription": "This app does not access your photo library.",
+        "LSApplicationQueriesSchemes": [
+          "nflx",
+          "disneyplus",
+          "primevideo",
+          "hulu",
+          "max",
+          "paramountplus",
+          "peacocktv",
+          "tvapp",
+          "youtube",
+          "crunchyroll",
+          "tubitv",
+          "plutotv"
         ]
       },
-      "bundleIdentifier": "com.anonymous.EntInfo"
+      "appStoreUrl": "https://apps.apple.com/app/2watch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F171E"
       },
-      "package": "com.anonymous.EntInfo",
+      "package": "com.twowatch.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.INTERNET"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",
           "data": [
             {
-              "scheme": "entinfo"
+              "scheme": "2watch"
             }
           ],
           "category": [
@@ -52,7 +77,17 @@
             "BROWSABLE"
           ]
         }
-      ]
-    }
+      ],
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.2watch.app"
+    },
+    "plugins": [
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "bb2948dd-7d24-4f42-bc6e-4559bb484af9"
+      }
+    },
+    "owner": "bluehawana"
   }
 }
