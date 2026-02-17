@@ -18,9 +18,11 @@
     "ios": {
       "supportsTablet": true,
       "supportsAppleTv": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.twowatch.app",
-      "buildNumber": "2",
+      "buildNumber": "5",
       "teamId": "B5627M73YT",
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -59,6 +61,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F171E"
       },
+      "googleServicesFile": "./google-services.json",
       "package": "com.twowatch.app",
       "versionCode": 1,
       "permissions": [
@@ -80,9 +83,7 @@
       ],
       "playStoreUrl": "https://play.google.com/store/apps/details?id=com.2watch.app"
     },
-    "plugins": [
-      "expo-localization"
-    ],
+    "plugins": [],
     "extra": {
       "eas": {
         "projectId": "bb2948dd-7d24-4f42-bc6e-4559bb484af9"
