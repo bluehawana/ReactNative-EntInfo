@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - 2watch</title>
+    <title>2watch - Discover Movies & TV Shows</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -11,155 +11,87 @@
             background-color: #0F171E;
             color: #E0E0E0;
             line-height: 1.7;
-            padding: 0 20px;
         }
-        .container {
-            max-width: 800px;
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 40px 0 80px;
         }
-        h1 {
+        .hero h1 {
             color: #FFFFFF;
-            font-size: 2rem;
-            margin-bottom: 8px;
+            font-size: 2.5rem;
+            margin-bottom: 16px;
         }
-        h2 {
-            color: #FFFFFF;
-            font-size: 1.4rem;
-            margin-top: 36px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #1E2D3D;
-            padding-bottom: 8px;
-        }
-        h3 {
+        .hero h1 span { color: #00A8E1; }
+        .hero p {
             color: #B0BEC5;
             font-size: 1.1rem;
-            margin-top: 24px;
-            margin-bottom: 8px;
-        }
-        p {
-            margin-bottom: 14px;
-            color: #B0BEC5;
-        }
-        .last-updated {
-            color: #607D8B;
-            font-size: 0.9rem;
             margin-bottom: 32px;
         }
-        ul {
-            margin: 8px 0 14px 24px;
-            color: #B0BEC5;
-        }
-        li { margin-bottom: 6px; }
-        a {
-            color: #4FC3F7;
-            text-decoration: none;
-        }
-        a:hover { text-decoration: underline; }
-        .app-name {
-            color: #4FC3F7;
-            font-weight: 600;
-        }
-        .compliance {
-            background: #1A2632;
+        .badges { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+        .badge {
+            display: inline-block;
+            background: #1A242F;
+            color: #00A8E1;
+            padding: 12px 24px;
             border-radius: 8px;
-            padding: 20px 24px;
-            margin-top: 16px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid #2A3A4A;
         }
-        .compliance li { list-style: none; margin-left: -24px; }
+        .badge:hover { background: #232F3E; }
+        .features {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+        .feature {
+            background: #1A242F;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .feature h3 { color: #FFFFFF; margin-bottom: 8px; }
+        .feature p { color: #B0BEC5; }
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #1E2D3D;
+            color: #607D8B;
+            font-size: 0.9rem;
+        }
+        .footer a { color: #4FC3F7; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Privacy Policy</h1>
-        <p class="last-updated">Last updated: February 17, 2026</p>
-
-        <h2>Introduction</h2>
-        <p>Welcome to <span class="app-name">2watch</span>. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.</p>
-
-        <h2>Information We Collect</h2>
-
-        <h3>Personal Information</h3>
-        <p>We do not collect personally identifiable information from users of our app. 2watch operates without requiring user accounts or personal data.</p>
-
-        <h3>Automatically Collected Information</h3>
-        <ul>
-            <li><strong>App Usage Data:</strong> We may collect anonymous information about how you use the app to improve user experience</li>
-            <li><strong>Device Information:</strong> We may collect information about your device type and operating system version for compatibility purposes</li>
-            <li><strong>Crash Data:</strong> Anonymous crash reports may be sent to help us fix bugs and improve stability</li>
-        </ul>
-
-        <h3>Local Data Storage</h3>
-        <p>All data you create in 2watch (such as your watchlist) is stored locally on your device using secure local storage techniques. This data:</p>
-        <ul>
-            <li>Never leaves your device</li>
-            <li>Is not transmitted to our servers</li>
-            <li>Can be deleted by uninstalling the app</li>
-        </ul>
-
-        <h3>Third-Party Services</h3>
-        <p>2watch uses the following third-party services:</p>
-        <p><strong>TMDB (The Movie Database) API</strong> &mdash; Used to fetch movie and TV show information. TMDB's privacy policy applies: <a href="https://www.themoviedb.org/privacy-policy">themoviedb.org/privacy-policy</a></p>
-        <p><strong>Streaming Provider Links</strong> &mdash; Links to third-party streaming services (Netflix, Disney+, etc.). Each service has its own privacy policy. 2watch does not track your activity on these external platforms.</p>
-        <p><strong>Expo and React Native</strong> &mdash; Our app is built using the Expo framework. Expo's privacy policy: <a href="https://expo.dev/privacy">expo.dev/privacy</a></p>
-
-        <h2>How We Use Your Information</h2>
-        <p>The limited information we collect is used to:</p>
-        <ul>
-            <li>Improve app functionality and user experience</li>
-            <li>Fix bugs and technical issues</li>
-            <li>Analyze app performance</li>
-        </ul>
-
-        <h2>Data Sharing</h2>
-        <p>We do not sell, trade, or otherwise transfer your data to outside parties. We do not share data with other companies, marketing agencies, or data brokers.</p>
-
-        <h2>Data Security</h2>
-        <p>We implement appropriate technical and organizational security measures to protect any data processed through our app. However, no method of electronic storage is 100% secure.</p>
-
-        <h2>Children's Privacy</h2>
-        <p>2watch is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.</p>
-
-        <h2>Advertising</h2>
-        <p>2watch does not display third-party advertisements.</p>
-
-        <h2>In-App Purchases</h2>
-        <p>2watch is currently a free app with no in-app purchases or subscriptions.</p>
-
-        <h2>Changes to This Privacy Policy</h2>
-        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
-
-        <h2>Your Rights</h2>
-        <p>Since 2watch stores all data locally on your device, you have complete control over your data:</p>
-        <ul>
-            <li>You can delete your watchlist at any time within the app</li>
-            <li>Uninstalling the app removes all locally stored data</li>
-        </ul>
-
-        <h2>Third-Party Links</h2>
-        <p>Our app contains links to external streaming services. We are not responsible for the content or privacy practices of these external sites. We encourage users to read the privacy policies of any third-party sites they visit.</p>
-
-        <h2>GDPR Compliance (EU Users)</h2>
-        <p>While 2watch does not collect personal data that would make GDPR compliance necessary, we commit to transparency about data usage, minimal data collection principles, local data storage by default, and no tracking or profiling.</p>
-
-        <h2>CCPA Compliance (California Users)</h2>
-        <p>2watch does not sell personal information as defined by the California Consumer Privacy Act (CCPA).</p>
-
-        <h2>Contact Us</h2>
-        <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p>
-        <p>Email: <a href="mailto:privacy@2watch.app">privacy@2watch.app</a></p>
-
-        <h2>Compliance Summary</h2>
-        <div class="compliance">
-            <ul>
-                <li>&#10003; Does not collect personal information</li>
-                <li>&#10003; Stores all user data locally on device</li>
-                <li>&#10003; Does not share data with third parties</li>
-                <li>&#10003; Does not use advertising networks</li>
-                <li>&#10003; Does not track users across apps or websites</li>
-                <li>&#10003; Uses industry-standard encryption for API communications</li>
-            </ul>
+    <div class="hero">
+        <h1><span>2watch</span></h1>
+        <p>Discover trending movies and TV shows. Find where to stream them. Save your favorites.</p>
+        <div class="badges">
+            <a class="badge" href="https://play.google.com/store/apps/details?id=com.twowatch.app">Google Play</a>
+            <a class="badge" href="https://apps.apple.com/app/2watch">App Store</a>
         </div>
+    </div>
+    <div class="features">
+        <div class="feature">
+            <h3>Trending & Popular</h3>
+            <p>Browse trending movies and TV shows updated daily from TMDB.</p>
+        </div>
+        <div class="feature">
+            <h3>Streaming Providers</h3>
+            <p>See where to watch on Netflix, Disney+, Prime Video, and more.</p>
+        </div>
+        <div class="feature">
+            <h3>Watchlist</h3>
+            <p>Save movies and shows to your personal watchlist, synced across devices.</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p><a href="/privacy.html">Privacy Policy</a></p>
+        <p style="margin-top: 8px;">Contact: <a href="mailto:privacy@2watch.app">privacy@2watch.app</a></p>
+        <p style="margin-top: 16px;">&copy; 2026 2watch. All rights reserved.</p>
     </div>
 </body>
 </html>
