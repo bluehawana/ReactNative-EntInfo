@@ -37,7 +37,7 @@
     "production": {
       "ios": {
         "appleId": "bluehawana@gmail.com",
-        "ascAppId": "REPLACE_WITH_NUMERIC_APP_ID"
+        "ascAppId": "1021866357"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account-key.json",
