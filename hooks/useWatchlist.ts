@@ -4,14 +4,14 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
 import * as watchlistService from '../services/watchlist';
 import type { WatchlistItem } from '../services/watchlist';
 
 const WATCHLIST_QUERY_KEY = ['watchlist'] as const;
 
 function getWatchlistScope(): string {
-  return auth().currentUser?.uid ?? 'guest';
+  return getAuth().currentUser?.uid ?? 'guest';
 }
 
 /**

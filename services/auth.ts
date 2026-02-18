@@ -1,4 +1,14 @@
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import {
+  AppleAuthProvider,
+  FirebaseAuthTypes,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged as onAuthStateChangedListener,
+  sendSignInLinkToEmail as sendSignInLinkToEmailModular,
+  signInWithCredential,
+  signInWithEmailLink as signInWithEmailLinkModular,
+  signOut as signOutModular,
+} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
@@ -14,8 +24,8 @@ export async function signInWithGoogle(): Promise<FirebaseAuthTypes.UserCredenti
   const response = await GoogleSignin.signIn();
   const idToken = response.data?.idToken;
   if (!idToken) throw new Error('No ID token from Google Sign-In');
-  const credential = auth.GoogleAuthProvider.credential(idToken);
-  return auth().signInWithCredential(credential);
+  const credential = GoogleAuthProvider.credential(idToken);
+  return signInWithCredential(getAuth(), credential);
 }
 
 export async function signInWithApple(): Promise<FirebaseAuthTypes.UserCredential> {
@@ -36,8 +46,8 @@ export async function signInWithApple(): Promise<FirebaseAuthTypes.UserCredentia
   const { identityToken } = appleCredential;
   if (!identityToken) throw new Error('No identity token from Apple Sign-In');
 
-  const credential = auth.AppleAuthProvider.credential(identityToken, nonce);
-  const userCredential = await auth().signInWithCredential(credential);
+  const credential = AppleAuthProvider.credential(identityToken, nonce);
+  const userCredential = await signInWithCredential(getAuth(), credential);
 
   // Apple only provides name on first sign-in, so update profile if available
   if (appleCredential.fullName?.givenName && !userCredential.user.displayName) {
@@ -63,18 +73,19 @@ export async function sendSignInEmailLink(email: string): Promise<void> {
       installApp: true,
     },
   };
-  await auth().sendSignInLinkToEmail(email, actionCodeSettings);
+  await sendSignInLinkToEmailModular(getAuth(), email, actionCodeSettings);
 }
 
 export async function confirmSignInEmailLink(
   email: string,
   link: string
 ): Promise<FirebaseAuthTypes.UserCredential> {
-  return auth().signInWithEmailLink(email, link);
+  return signInWithEmailLinkModular(getAuth(), email, link);
 }
 
 export async function signOut(): Promise<void> {
-  const currentUser = auth().currentUser;
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
   if (currentUser) {
     // Check if signed in with Google
     const googleProvider = currentUser.providerData.find(
@@ -89,17 +100,17 @@ export async function signOut(): Promise<void> {
       }
     }
   }
-  await auth().signOut();
+  await signOutModular(auth);
 }
 
 export function getCurrentUser(): FirebaseAuthTypes.User | null {
-  return auth().currentUser;
+  return getAuth().currentUser;
 }
 
 export function onAuthStateChanged(
   callback: (user: FirebaseAuthTypes.User | null) => void
 ): () => void {
-  return auth().onAuthStateChanged(callback);
+  return onAuthStateChangedListener(getAuth(), callback);
 }
 
 export function isAppleSignInAvailable(): boolean {

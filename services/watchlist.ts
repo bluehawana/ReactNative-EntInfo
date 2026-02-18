@@ -1,6 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  setDoc,
+  writeBatch,
+} from '@react-native-firebase/firestore';
+import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
 const WATCHLIST_KEY = '2watch_watchlist';
 
@@ -14,11 +26,11 @@ export interface WatchlistItem {
 }
 
 function getUid(): string | null {
-  return auth().currentUser?.uid ?? null;
+  return getAuth().currentUser?.uid ?? null;
 }
 
 function watchlistCollection(uid: string) {
-  return firestore().collection('users').doc(uid).collection('watchlist');
+  return collection(getFirestore(), 'users', uid, 'watchlist');
 }
 
 // --- Local (AsyncStorage) methods ---
@@ -40,15 +52,14 @@ async function setLocalWatchlist(items: WatchlistItem[]): Promise<void> {
 // --- Firestore methods ---
 
 async function getFirestoreWatchlist(uid: string): Promise<WatchlistItem[]> {
-  const snapshot = await watchlistCollection(uid)
-    .orderBy('addedAt', 'desc')
-    .get();
-  return snapshot.docs.map((doc) => doc.data() as WatchlistItem);
+  const watchlistQuery = query(watchlistCollection(uid), orderBy('addedAt', 'desc'));
+  const snapshot: FirebaseFirestoreTypes.QuerySnapshot = await getDocs(watchlistQuery);
+  return snapshot.docs.map((itemDoc) => itemDoc.data() as WatchlistItem);
 }
 
 async function addToFirestore(uid: string, item: WatchlistItem): Promise<void> {
   const docId = `${item.mediaType}_${item.id}`;
-  await watchlistCollection(uid).doc(docId).set(item);
+  await setDoc(doc(watchlistCollection(uid), docId), item);
 }
 
 async function removeFromFirestore(
@@ -57,7 +68,7 @@ async function removeFromFirestore(
   mediaType: 'movie' | 'tv'
 ): Promise<void> {
   const docId = `${mediaType}_${id}`;
-  await watchlistCollection(uid).doc(docId).delete();
+  await deleteDoc(doc(watchlistCollection(uid), docId));
 }
 
 // --- Merge local watchlist into Firestore on first login ---
@@ -74,12 +85,12 @@ export async function mergeLocalWatchlistToFirestore(): Promise<void> {
     firestoreItems.map((i) => `${i.mediaType}_${i.id}`)
   );
 
-  const batch = firestore().batch();
+  const batch = writeBatch(getFirestore());
   let hasChanges = false;
   for (const item of localItems) {
     const docId = `${item.mediaType}_${item.id}`;
     if (!existingIds.has(docId)) {
-      const ref = watchlistCollection(uid).doc(docId);
+      const ref = doc(watchlistCollection(uid), docId);
       batch.set(ref, item);
       hasChanges = true;
     }
@@ -178,8 +189,8 @@ export async function isInWatchlist(
   if (uid) {
     try {
       const docId = `${mediaType}_${id}`;
-      const doc = await watchlistCollection(uid).doc(docId).get();
-      return doc.exists();
+      const itemDoc = await getDoc(doc(watchlistCollection(uid), docId));
+      return itemDoc.exists();
     } catch (error) {
       console.error('Error checking Firestore watchlist:', error);
       return false;
