@@ -54,7 +54,9 @@
           "plutotv"
         ]
       },
-      "appStoreUrl": "https://apps.apple.com/app/2watch"
+      "appStoreUrl": "https://apps.apple.com/app/2watch",
+      "privacyPolicyUrl": "https://privacy.bluehawana.com/privacy.html",
+      "supportUrl": "https://privacy.bluehawana.com"
     },
     "android": {
       "adaptiveIcon": {
