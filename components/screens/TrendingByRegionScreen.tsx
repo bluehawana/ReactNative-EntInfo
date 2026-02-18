@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, Text, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  StatusBar,
+  Platform,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,8 +19,14 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
 import { EmptyState } from '../ui/EmptyState';
 import { Ionicons } from '@expo/vector-icons';
+import type { Movie, TVShow } from '../../types';
+import type { Region } from '../../hooks/useTrendingByRegion';
 
 type RootStackParamList = { Detail: { id: number; mediaType: 'movie' | 'tv' } };
+type RegionMediaItem = Movie | TVShow;
+const NUM_COLUMNS = 2;
+const INITIAL_RENDER = 8;
+const BATCH_RENDER = 8;
 
 export function TrendingByRegionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -20,10 +35,39 @@ export function TrendingByRegionScreen() {
   const insets = useSafeAreaInsets();
 
   const items = activeTab === 'movies' ? movies : tvs;
+  const mediaType = activeTab === 'movies' ? 'movie' : 'tv';
 
-  const handleItemPress = (item: any) => {
-    navigation.navigate('Detail', { id: item.id, mediaType: activeTab === 'movies' ? 'movie' : 'tv' });
-  };
+  const keyExtractor = useCallback((item: RegionMediaItem) => item.id.toString(), []);
+  const renderItem = useCallback(
+    ({ item }: { item: RegionMediaItem }) => (
+      <MediaCard media={item} mediaType={mediaType} />
+    ),
+    [mediaType]
+  );
+  const renderRegionItem = useCallback(
+    ({ item }: { item: Region }) => (
+      <TouchableOpacity
+        style={[
+          styles.regionItem,
+          selectedRegion === item.code && { backgroundColor: colors.primary },
+        ]}
+        onPress={() => setSelectedRegion(item.code)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.regionFlag}>{item.flag}</Text>
+        <Text
+          style={[
+            styles.regionName,
+            selectedRegion === item.code ? { color: colors.textInverse } : { color: colors.text },
+          ]}
+          numberOfLines={1}
+        >
+          {item.code}
+        </Text>
+      </TouchableOpacity>
+    ),
+    [selectedRegion, setSelectedRegion]
+  );
 
   if (isLoading && items.length === 0) {
     return <LoadingSpinner />;
@@ -52,27 +96,7 @@ export function TrendingByRegionScreen() {
           keyExtractor={(item) => item.code}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.regionList}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.regionItem,
-                selectedRegion === item.code && { backgroundColor: colors.primary },
-              ]}
-              onPress={() => setSelectedRegion(item.code)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.regionFlag}>{item.flag}</Text>
-              <Text
-                style={[
-                  styles.regionName,
-                  selectedRegion === item.code ? { color: colors.textInverse } : { color: colors.text },
-                ]}
-                numberOfLines={1}
-              >
-                {item.code}
-              </Text>
-            </TouchableOpacity>
-          )}
+          renderItem={renderRegionItem}
         />
       </View>
 
@@ -103,14 +127,17 @@ export function TrendingByRegionScreen() {
         />
       ) : (
         <FlatList
-          data={items as any[]}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
+          data={items}
+          keyExtractor={keyExtractor}
+          numColumns={NUM_COLUMNS}
           columnWrapperStyle={styles.row}
-          renderItem={({ item }) => (
-            <MediaCard media={item} mediaType={activeTab === 'movies' ? 'movie' : 'tv'} />
-          )}
+          renderItem={renderItem}
           contentContainerStyle={styles.contentContainer}
+          initialNumToRender={INITIAL_RENDER}
+          maxToRenderPerBatch={BATCH_RENDER}
+          updateCellsBatchingPeriod={50}
+          windowSize={7}
+          removeClippedSubviews={Platform.OS === 'android'}
           refreshControl={
             <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
           }

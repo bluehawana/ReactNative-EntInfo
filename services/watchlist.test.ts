@@ -26,7 +26,7 @@ describe('Watchlist Service', () => {
       const result = await getWatchlist();
 
       expect(result).toEqual([]);
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('2watch_watchlist');
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith('2watchhub_watchlist');
     });
 
     it('should return watchlist items when they exist', async () => {

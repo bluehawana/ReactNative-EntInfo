@@ -119,7 +119,7 @@ function AppContent() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: 'Check out this movie/TV show on 2Watch app!',
+        message: 'Check out this movie/TV show on 2watchhub app!',
       });
     } catch (error) {
       Alert.alert('Error', 'Could not share');

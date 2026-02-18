@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList, Text, StatusBar } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, FlatList, Text, StatusBar, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSearch } from '../../hooks/useMedia';
 import { colors, spacing } from '../../theme/simple';
@@ -8,8 +8,12 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { SearchBar } from '../ui/SearchBar';
 import { EmptyState } from '../ui/EmptyState';
 import { Ionicons } from '@expo/vector-icons';
+import type { TrendingItem } from '../../types';
 
 const SEARCH_DEBOUNCE_MS = 500;
+const NUM_COLUMNS = 2;
+const INITIAL_RENDER = 8;
+const BATCH_RENDER = 8;
 
 export function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -26,6 +30,14 @@ export function SearchScreen() {
   const { data: content, isLoading, error } = useSearch(debouncedQuery);
 
   const handleClear = () => setQuery('');
+  const keyExtractor = useCallback(
+    (item: TrendingItem) => `${item.id}-${item.media_type}`,
+    []
+  );
+  const renderItem = useCallback(
+    ({ item }: { item: TrendingItem }) => <MediaCard media={item} />,
+    []
+  );
 
   return (
     <View style={styles.container}>
@@ -44,11 +56,16 @@ export function SearchScreen() {
       ) : content && content.length > 0 ? (
         <FlatList
           data={content}
-          keyExtractor={(item) => `${item.id}-${item.media_type}`}
-          numColumns={2}
+          keyExtractor={keyExtractor}
+          numColumns={NUM_COLUMNS}
           columnWrapperStyle={styles.row}
-          renderItem={({ item }) => <MediaCard media={item} />}
+          renderItem={renderItem}
           contentContainerStyle={[styles.contentContainer, { paddingBottom: 100 }]}
+          initialNumToRender={INITIAL_RENDER}
+          maxToRenderPerBatch={BATCH_RENDER}
+          updateCellsBatchingPeriod={50}
+          windowSize={7}
+          removeClippedSubviews={Platform.OS === 'android'}
           showsVerticalScrollIndicator={false}
         />
       ) : debouncedQuery.length > 0 ? (

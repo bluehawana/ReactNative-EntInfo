@@ -20,6 +20,12 @@ google-service-account-key.json
 client_secret_*.json
 android/app/debug.keystore
 
+# Firebase/Google service files (contain API keys)
+ios/**/GoogleService-Info.plist
+ios/GoogleService-Info.plist
+android/app/google-services.json
+android/google-services.json
+
 # Build outputs
 *.aab
 *.apk

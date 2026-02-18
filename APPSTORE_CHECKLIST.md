@@ -1,9 +1,9 @@
-# App Store Submission Checklist for 2watch
+# App Store Submission Checklist for 2watchhub
 
 ## Pre-Submission Checklist
 
 ### App Information
-- [ ] App Name: 2watch ✅ (Set in app.json)
+- [ ] App Name: 2watchhub ✅ (Set in app.json)
 - [ ] Bundle ID: com.twowatch.app ✅ (Configured)
 - [ ] Version: 1.0.0 ✅ (Set in app.json)
 - [ ] Build Number: 1 ✅ (Increment if rebuilding)
@@ -19,14 +19,14 @@
 - [ ] Click "+" → "New App"
 - [ ] Fill in:
   - Platform: iOS
-  - Name: 2watch
+  - Name: 2watchhub
   - Primary Language: English
   - Bundle ID: com.twowatch.app
   - SKU: com.twowatch.app (or any unique identifier)
   - User Access: Limited access or Full access
 
 #### 2. App Information
-- [ ] Name: 2watch
+- [ ] Name: 2watchhub
 - [ ] Subtitle: Track movies & discover where to stream
 - [ ] Category: Entertainment
 - [ ] Secondary Category: Lifestyle (optional)
@@ -44,7 +44,7 @@
 - [ ] Educational discount: No (not needed for free app)
 
 #### 4. App Privacy
-- [ ] Privacy Policy URL: https://2watch.app/privacy (must be hosted)
+- [ ] Privacy Policy URL: https://2watchhub.app/privacy (must be hosted)
 - [ ] Data Types:
   - [ ] Contact Info: None collected
   - [ ] Financial Info: None collected
@@ -164,8 +164,8 @@ eas build --platform ios --profile production
    - Promotional Text (170 chars): "Track movies & TV shows. Find where to watch with direct streaming links."
    - Keywords: movies,tv shows,streaming,watchlist,netflix,disney,prime video,entertainment,trending
    - Description: (see STORE_LISTING_ASSETS.md)
-   - Support URL: https://2watch.app/support
-   - Marketing URL: https://2watch.app
+   - Support URL: https://2watchhub.app/support
+   - Marketing URL: https://2watchhub.app
 
 5. **Set App Review Information**
 6. **Select Pricing**

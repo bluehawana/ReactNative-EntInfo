@@ -1,5 +1,13 @@
-import React from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, Text, StatusBar } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  RefreshControl,
+  Text,
+  StatusBar,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePopularMovies } from '../../hooks/useMedia';
 import { colors, spacing } from '../../theme/simple';
@@ -7,10 +15,20 @@ import { MediaCard } from '../ui/MediaCard';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
 import { EmptyState } from '../ui/EmptyState';
+import type { Movie } from '../../types';
+
+const NUM_COLUMNS = 2;
+const INITIAL_RENDER = 8;
+const BATCH_RENDER = 8;
 
 export function MoviesScreen() {
   const { data: content, isLoading, error, refetch } = usePopularMovies();
   const insets = useSafeAreaInsets();
+  const keyExtractor = useCallback((item: Movie) => item.id.toString(), []);
+  const renderItem = useCallback(
+    ({ item }: { item: Movie }) => <MediaCard media={item} mediaType="movie" />,
+    []
+  );
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -32,11 +50,16 @@ export function MoviesScreen() {
       </View>
       <FlatList
         data={content}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
+        keyExtractor={keyExtractor}
+        numColumns={NUM_COLUMNS}
         columnWrapperStyle={styles.row}
-        renderItem={({ item }) => <MediaCard media={item} mediaType="movie" />}
+        renderItem={renderItem}
         contentContainerStyle={[styles.contentContainer, { paddingBottom: 100 }]}
+        initialNumToRender={INITIAL_RENDER}
+        maxToRenderPerBatch={BATCH_RENDER}
+        updateCellsBatchingPeriod={50}
+        windowSize={7}
+        removeClippedSubviews={Platform.OS === 'android'}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
         }

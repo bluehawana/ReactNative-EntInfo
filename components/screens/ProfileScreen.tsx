@@ -146,7 +146,7 @@ function SignInView() {
         keyboardShouldPersistTaps="handled"
       >
         <Ionicons name="person-circle-outline" size={80} color={colors.textTertiary} />
-        <Text style={styles.signInTitle}>Sign in to 2Watch</Text>
+        <Text style={styles.signInTitle}>Sign in to 2watchhub</Text>
         <Text style={styles.signInSubtitle}>
           Sync your watchlist across all your devices
         </Text>

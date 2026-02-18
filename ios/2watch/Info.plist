@@ -9,7 +9,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>2watch</string>
+    <string>2watchhub</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -29,7 +29,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>2watch</string>
+          <string>2watchhub</string>
         </array>
       </dict>
       <dict>
@@ -41,7 +41,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+2watch</string>
+          <string>exp+2watchhub</string>
         </array>
       </dict>
     </array>

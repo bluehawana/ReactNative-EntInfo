@@ -1,4 +1,4 @@
-# 2watch - Final Store Submission Checklist
+# 2watchhub - Final Store Submission Checklist
 
 ## Screenshots Organized ✅
 
@@ -76,7 +76,7 @@ With the new **Profile** and **Watchlist** features, you should take FRESH scree
 - [ ] Launch screen configured
 
 #### App Information
-- [ ] App name: "2watch"
+- [ ] App name: "2watchhub"
 - [ ] Subtitle: "Track movies & TV shows"
 - [ ] Category: Entertainment
 - [ ] Secondary category: Lifestyle
@@ -91,8 +91,8 @@ With the new **Profile** and **Watchlist** features, you should take FRESH scree
 - [ ] App icon (already have: assets/icon.jpg)
 - [ ] Promotional text (170 chars max)
 - [ ] Keywords (100 chars max)
-- [ ] Support URL (create: https://2watch.app/support)
-- [ ] Privacy policy URL (create: https://2watch.app/privacy)
+- [ ] Support URL (create: https://2watchhub.app/support)
+- [ ] Privacy policy URL (create: https://2watchhub.app/privacy)
 - [ ] Marketing URL (optional)
 
 #### Legal
@@ -113,7 +113,7 @@ With the new **Profile** and **Watchlist** features, you should take FRESH scree
 - [ ] Feature graphic: 1024x500 (NEED TO CREATE)
 
 #### App Information
-- [ ] App name: "2watch"
+- [ ] App name: "2watchhub"
 - [ ] Short description (80 chars): "Track movies & TV shows, find where to watch"
 - [ ] Full description (4000 chars max) - see STORE_LISTING_ASSETS.md
 - [ ] Category: Entertainment

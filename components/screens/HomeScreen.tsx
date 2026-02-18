@@ -223,7 +223,7 @@ export function HomeScreen() {
 
       {/* Floating App Title */}
       <View style={[styles.appHeader, { paddingTop: insets.top + 8 }]}>
-        <Text style={styles.appTitle}>2Watch</Text>
+        <Text style={styles.appTitle}>2watchhub</Text>
       </View>
 
       <ScrollView

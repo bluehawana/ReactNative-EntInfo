@@ -2,8 +2,8 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: '2watch',
-  slug: '2watch',
+  name: '2watchhub',
+  slug: '2watchhub',
   plugins: [
     'expo-localization',
     '@react-native-firebase/app',

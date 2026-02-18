@@ -14,7 +14,7 @@ import {
 } from '@react-native-firebase/firestore';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
-const WATCHLIST_KEY = '2watch_watchlist';
+const WATCHLIST_KEY = '2watchhub_watchlist';
 
 export interface WatchlistItem {
   id: number;

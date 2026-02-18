@@ -1,4 +1,4 @@
-# Google Play Store Submission Checklist for 2watch
+# Google Play Store Submission Checklist for 2watchhub
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@
 
 #### Play App Signing (Google Play manages signing)
 - [ ] Choose "Play App Signing" during first upload
-- [ ] Upload your AAB file: `2watch-release.aab`
+- [ ] Upload your AAB file: `2watchhub-release.aab`
 - [ ] Google will handle signing from there
 
 ---
@@ -27,7 +27,7 @@
 1. Log into [Google Play Console](https://play.google.com/console)
 2. Click "Create app"
 3. Fill in:
-   - App name: **2watch**
+   - App name: **2watchhub**
    - Default language: **English**
    - App or game: **App**
    - Free or paid: **Free**
@@ -73,7 +73,7 @@
 #### Store Listing Details
 
 **App Details:**
-- App name: **2watch**
+- App name: **2watchhub**
 - Short description: **Track movies & TV shows, find where to watch**
 - Full description: (Copy from STORE_LISTING_ASSETS.md)
 
@@ -112,10 +112,10 @@
 6. **Wear OS / Android TV** (Not applicable currently)
 
 **Store Listing Contact Details:**
-- Application website: https://2watch.app (optional)
-- Support email: support@2watch.app (required)
+- Application website: https://2watchhub.app (optional)
+- Support email: support@2watchhub.app (required)
 - Support phone: (optional)
-- Privacy policy: https://2watch.app/privacy (required - you must host this)
+- Privacy policy: https://2watchhub.app/privacy (required - you must host this)
 
 **Categorization:**
 - Application type: Applications
@@ -169,7 +169,7 @@
 - [ ] Other: **Optional - diagnostics**
 
 3. Add Privacy Policy URL
-   - [ ] URL: https://2watch.app/privacy
+   - [ ] URL: https://2watchhub.app/privacy
    - [ ] Must be accessible and match app behavior
 
 ### Step 6: Upload App Bundle
@@ -181,7 +181,7 @@
 #### Internal Testing Track (Recommended First)
 1. Go to **Testing** → **Internal testing**
 2. [ ] Create release
-3. [ ] Upload your AAB: `2watch-release.aab`
+3. [ ] Upload your AAB: `2watchhub-release.aab`
 4. [ ] Review Release notes: "Initial release"
 5. [ ] Save changes
 6. [ ] Add testers via email or Google Groups
@@ -190,7 +190,7 @@
 
 #### Production Track
 1. Go to **Production** → **Create new release**
-2. [ ] Upload your AAB: `2watch-release.aab`
+2. [ ] Upload your AAB: `2watchhub-release.aab`
 3. [ ] Release name: "1.0.0" (auto-populated)
 4. [ ] Release notes:
    - Language: English (United States)
@@ -270,16 +270,16 @@ When approved:
 ## Quick Reference
 
 **Package Name**: com.twowatch.app
-**App Name**: 2watch
+**App Name**: 2watchhub
 **Category**: Entertainment
 **Content Rating**: Teen (13+)
 **Price**: Free
 **Target SDK**: [Check in app.json]
 
 **Required Links**:
-- Privacy Policy: https://2watch.app/privacy
-- Support Email: support@2watch.app
-- Website: https://2watch.app (optional)
+- Privacy Policy: https://2watchhub.app/privacy
+- Support Email: support@2watchhub.app
+- Website: https://2watchhub.app (optional)
 
 **Build Commands**:
 ```bash

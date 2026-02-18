@@ -2,6 +2,7 @@
  * Streaming service deep links
  * Maps provider IDs to app deep links and web URLs
  */
+import { Linking } from 'react-native';
 
 export interface StreamingProvider {
   providerId: number;
@@ -301,7 +302,6 @@ export async function openStreamingProvider(
   providerId: number,
   input?: ProviderInput
 ): Promise<{ success: boolean; openedApp: boolean }> {
-  const { Linking } = await import('react-native');
   const { title, providerPageUrl } = normalizeProviderInput(input);
   const q = encodeURIComponent(title || '');
 

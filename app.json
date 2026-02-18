@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "2watch",
-    "slug": "2watch",
+    "name": "2watchhub",
+    "slug": "2watchhub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -30,7 +30,7 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "2watch"
+              "2watchhub"
             ]
           }
         ],
@@ -54,7 +54,7 @@
           "plutotv"
         ]
       },
-      "appStoreUrl": "https://apps.apple.com/app/2watch",
+      "appStoreUrl": "https://apps.apple.com/app/2watchhub",
       "privacyPolicyUrl": "https://privacy.bluehawana.com/privacy.html",
       "supportUrl": "https://privacy.bluehawana.com"
     },
@@ -74,7 +74,7 @@
           "action": "VIEW",
           "data": [
             {
-              "scheme": "2watch"
+              "scheme": "2watchhub"
             }
           ],
           "category": [
@@ -83,7 +83,7 @@
           ]
         }
       ],
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.2watch.app"
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.twowatch.app"
     },
     "plugins": [],
     "extra": {

@@ -1,18 +1,18 @@
-# 2watch - Store Listing Assets
+# 2watchhub - Store Listing Assets
 
 ## App Metadata
 
 ### App Name
-**2watch** (already configured)
+**2watchhub** (already configured)
 
 ### Short Description (80 characters max)
 Track movies & TV shows, find where to watch
 
 ### Full Description (Google Play - 4000 characters max)
 
-**2watch - Your Ultimate Entertainment Companion**
+**2watchhub - Your Ultimate Entertainment Companion**
 
-Discover, track, and watch your favorite movies and TV shows all in one place. 2watch makes it easy to find where your favorite content is streaming and never miss the latest releases.
+Discover, track, and watch your favorite movies and TV shows all in one place. 2watchhub makes it easy to find where your favorite content is streaming and never miss the latest releases.
 
 **Key Features:**
 
@@ -54,14 +54,14 @@ Discover, track, and watch your favorite movies and TV shows all in one place. 2
 • Tubi
 • Pluto TV
 
-**Why 2watch?**
+**Why 2watchhub?**
 - Clean, modern dark-themed interface
 - Fast and responsive design
 - Easy-to-use navigation
 - Comprehensive content database
 - Regular updates with trending content
 
-Download 2watch today and take control of your entertainment experience!
+Download 2watchhub today and take control of your entertainment experience!
 
 ---
 
@@ -81,13 +81,13 @@ Discover, track, and watch your favorite movies and TV shows. Find trending cont
 movies,tv shows,streaming,netflix,disney plus,watchlist,entertainment,trending,prime video,hulu
 
 ## Support URL
-https://2watch.app/support (create this)
+https://2watchhub.app/support (create this)
 
 ## Marketing URL (App Store)
-https://2watch.app (create this)
+https://2watchhub.app (create this)
 
 ## Privacy Policy URL
-https://2watch.app/privacy (create this)
+https://2watchhub.app/privacy (create this)
 
 ## Screenshots Required
 
