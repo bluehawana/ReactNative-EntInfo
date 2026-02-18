@@ -4,6 +4,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "setup:firebase": "node scripts/setup-firebase-config.js",
     "test": "jest --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --detectOpenHandles --forceExit",
