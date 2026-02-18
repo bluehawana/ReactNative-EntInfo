@@ -16,7 +16,9 @@ export type ProviderMediaType = 'movie' | 'tv';
 export interface ProviderOpenOptions {
   title?: string;
   mediaType?: ProviderMediaType;
-  providerPageUrl?: string;
+  providerPageUrl?: string; // JustWatch URL from TMDB — specific to this title
+  imdbId?: string | null;   // IMDB ID for direct Amazon links
+  year?: number | null;     // Release year to narrow search results
 }
 
 type ProviderInput = string | ProviderOpenOptions | undefined;
@@ -180,38 +182,106 @@ export function getProviderDeepLink(providerId: number, input?: ProviderInput): 
 }
 
 /**
- * Returns an HTTPS search URL that lands on results for the given title.
- * iOS and Android treat these as universal links and open them directly
- * inside the provider app if installed, otherwise fall back to browser.
+ * Returns the best possible URL for the given title on a streaming provider.
+ *
+ * - Amazon Prime Video: uses IMDB ID for a direct content page when available.
+ * - All others: HTTPS search URL with title + year (universal link → opens in app).
+ *
+ * Note: Netflix, Disney+, Max, Apple TV+ use proprietary content IDs not
+ * available from TMDB, so we cannot link directly to their content page.
+ * The JustWatch providerPageUrl (from TMDB) is the best direct-to-content
+ * fallback for those platforms.
  */
 export function getProviderWebUrl(providerId: number, input?: ProviderInput): string | null {
-  const { title } = normalizeProviderInput(input);
+  const { title, imdbId, year } = normalizeProviderInput(input);
   if (!title) return streamingProviders[providerId]?.webUrl ?? null;
 
   const q = encodeURIComponent(title);
+  const qWithYear = year ? encodeURIComponent(`${title} ${year}`) : q;
 
   switch (providerId) {
+    // Amazon Prime Video — direct content page via IMDB ID, else search
+    case 119:
+      if (imdbId) return `https://www.amazon.com/gp/video/detail/${imdbId}`;
+      return `https://www.amazon.com/gp/video/search?phrase=${qWithYear}`;
+
+    // Apple TV+ / Apple TV (buy/rent) — universal link opens TV app to search
     case 350:
-    case 2:   return `https://tv.apple.com/search?term=${q}`;           // Apple TV / iTunes
-    case 8:   return `https://www.netflix.com/search?q=${q}`;           // Netflix
-    case 391: return `https://www.disneyplus.com/search/${q}`;          // Disney+
-    case 384: return `https://play.max.com/search?q=${q}`;              // Max (HBO)
-    case 119: return `https://www.amazon.com/gp/video/search?phrase=${q}`; // Prime Video
-    case 15:  return `https://www.hulu.com/search?query=${q}`;          // Hulu
-    case 531: return `https://www.paramountplus.com/search/${q}/`;      // Paramount+
-    case 498: return `https://www.peacocktv.com/search?q=${q}`;         // Peacock
-    case 247: return `https://www.youtube.com/results?search_query=${q}`; // YouTube
-    case 726: return `https://www.crunchyroll.com/search?q=${q}`;       // Crunchyroll
-    case 359: return `https://tubitv.com/search/${q}`;                  // Tubi
-    case 290: return `https://pluto.tv/search/${q}`;                    // Pluto TV
-    case 3:   return `https://play.google.com/store/search?q=${q}&c=movies`; // Google Play
-    case 257: return `https://www.fubo.tv/welcome?q=${q}`;              // Fubo
-    case 37:  return `https://www.sho.com/search#${q}`;                 // Showtime
-    case 11:  return `https://mubi.com/search/${q}`;                    // Mubi
-    case 99:  return `https://www.shudder.com/search?q=${q}`;           // Shudder
-    case 151: return `https://www.britbox.com/us/search?q=${q}`;        // BritBox
-    case 526: return `https://www.amcplus.com/search?q=${q}`;           // AMC+
-    case 43:  return `https://www.starz.com/us/en/search#q=${q}`;       // Starz
+    case 2:
+      return `https://tv.apple.com/search?term=${q}`;
+
+    // Netflix — search with year for precision
+    case 8:
+      return `https://www.netflix.com/search?q=${qWithYear}`;
+
+    // Disney+ — search
+    case 391:
+      return `https://www.disneyplus.com/search/${q}`;
+
+    // Max (HBO Max) — search
+    case 384:
+      return `https://play.max.com/search?q=${qWithYear}`;
+
+    // Hulu — search with year
+    case 15:
+      return `https://www.hulu.com/search?query=${qWithYear}`;
+
+    // Paramount+ — search
+    case 531:
+      return `https://www.paramountplus.com/search/${q}/`;
+
+    // Peacock — search
+    case 498:
+      return `https://www.peacocktv.com/search?q=${qWithYear}`;
+
+    // YouTube — search (includes YouTube Movies)
+    case 247:
+      return `https://www.youtube.com/results?search_query=${qWithYear}`;
+
+    // Crunchyroll
+    case 726:
+      return `https://www.crunchyroll.com/search?q=${q}`;
+
+    // Tubi (free)
+    case 359:
+      return `https://tubitv.com/search/${q}`;
+
+    // Pluto TV (free)
+    case 290:
+      return `https://pluto.tv/search/${q}`;
+
+    // Google Play Movies
+    case 3:
+      return `https://play.google.com/store/search?q=${qWithYear}&c=movies`;
+
+    // Fubo
+    case 257:
+      return `https://www.fubo.tv/welcome?q=${q}`;
+
+    // Showtime
+    case 37:
+      return `https://www.sho.com/search#${q}`;
+
+    // Mubi
+    case 11:
+      return `https://mubi.com/search/${q}`;
+
+    // Shudder
+    case 99:
+      return `https://www.shudder.com/search?q=${q}`;
+
+    // BritBox
+    case 151:
+      return `https://www.britbox.com/us/search?q=${q}`;
+
+    // AMC+
+    case 526:
+      return `https://www.amcplus.com/search?q=${q}`;
+
+    // Starz
+    case 43:
+      return `https://www.starz.com/us/en/search#q=${q}`;
+
     default: {
       const provider = streamingProviders[providerId];
       return provider ? `${provider.webUrl}/search?q=${q}` : null;

@@ -119,12 +119,12 @@ export const discoverTV = () =>
 
 export const getMovieDetails = (id: number) =>
   tmdbApi.get<MovieDetails>(`/movie/${id}`, {
-    params: { language: 'en-US' },
+    params: { language: 'en-US', append_to_response: 'external_ids' },
   });
 
 export const getTVDetails = (id: number) =>
   tmdbApi.get<TVDetails>(`/tv/${id}`, {
-    params: { language: 'en-US' },
+    params: { language: 'en-US', append_to_response: 'external_ids' },
   });
 
 export const getMovieCredits = (id: number) =>

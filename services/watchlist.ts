@@ -3,7 +3,6 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const WATCHLIST_KEY = '2watch_watchlist';
-const MERGE_DONE_KEY = '2watch_merge_done';
 
 export interface WatchlistItem {
   id: number;
@@ -67,15 +66,8 @@ export async function mergeLocalWatchlistToFirestore(): Promise<void> {
   const uid = getUid();
   if (!uid) return;
 
-  const mergeKey = `${MERGE_DONE_KEY}_${uid}`;
-  const alreadyMerged = await AsyncStorage.getItem(mergeKey);
-  if (alreadyMerged) return;
-
   const localItems = await getLocalWatchlist();
-  if (localItems.length === 0) {
-    await AsyncStorage.setItem(mergeKey, 'true');
-    return;
-  }
+  if (localItems.length === 0) return;
 
   const firestoreItems = await getFirestoreWatchlist(uid);
   const existingIds = new Set(
@@ -83,15 +75,19 @@ export async function mergeLocalWatchlistToFirestore(): Promise<void> {
   );
 
   const batch = firestore().batch();
+  let hasChanges = false;
   for (const item of localItems) {
     const docId = `${item.mediaType}_${item.id}`;
     if (!existingIds.has(docId)) {
       const ref = watchlistCollection(uid).doc(docId);
       batch.set(ref, item);
+      hasChanges = true;
     }
   }
-  await batch.commit();
-  await AsyncStorage.setItem(mergeKey, 'true');
+
+  if (hasChanges) {
+    await batch.commit();
+  }
 }
 
 // --- Public API (auto-selects local vs Firestore) ---

@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking as RNLinking } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,10 +14,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 type RootStackParamList = { Detail: { id: number; mediaType: 'movie' | 'tv' } };
 type DetailScreenRouteProp = RouteProp<RootStackParamList, 'Detail'>;
-type DetailScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export function DetailScreen() {
-  const navigation = useNavigation<DetailScreenNavigationProp>();
   const route = useRoute<DetailScreenRouteProp>();
   const { id, mediaType } = route.params;
   const { details, credits, providers, isLoading, error, refetch } = useMediaDetail(id, mediaType);
@@ -27,7 +23,6 @@ export function DetailScreen() {
   const { data: inWatchlist } = useIsInWatchlist(id, mediaType);
   const addToWatchlist = useAddToWatchlist();
   const removeFromWatchlist = useRemoveFromWatchlist();
-  const insets = useSafeAreaInsets();
 
   // Apple TV-style zoom animation
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -62,10 +57,14 @@ export function DetailScreen() {
     if (!details) return;
     const title = 'title' in details ? details.title : details.name;
     const encodedTitle = encodeURIComponent(title);
+    const releaseDate = 'release_date' in details ? details.release_date : details.first_air_date;
+    const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : null;
     const providerInput = {
       title,
       mediaType,
       providerPageUrl: usProviders?.link,
+      imdbId: details.external_ids?.imdb_id,
+      year: releaseYear,
     };
     const fallbackWebUrl =
       getProviderWebUrl(providerId, providerInput) ||
@@ -116,11 +115,6 @@ export function DetailScreen() {
           <View style={[styles.backdrop, { backgroundColor: colors.surfaceSecondary }]} />
         )}
         <LinearGradient colors={['transparent', 'rgba(0,0,0,0.6)', colors.background]} style={styles.backdropOverlay} />
-      </View>
-      <View style={[styles.backButtonSafeArea, { paddingTop: insets.top }]}>
-        <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.3)' }]} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
-        </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: spacing.xl + 60 }]}>
         <View style={styles.header}>
@@ -195,8 +189,6 @@ const styles = StyleSheet.create({
   backdropContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: 280 },
   backdrop: { width: '100%', height: 280 },
   backdropOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  backButtonSafeArea: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 },
-  backButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   scrollContent: { paddingTop: 240 },
   header: { paddingHorizontal: 16, paddingBottom: 8 },
   title: { marginBottom: 8 },

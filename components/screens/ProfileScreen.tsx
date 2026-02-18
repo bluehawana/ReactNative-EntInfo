@@ -16,7 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../hooks/useAuth';
 import { useWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { isAppleSignInAvailable } from '../../services/auth';
-import { mergeLocalWatchlistToFirestore } from '../../services/watchlist';
 import { IMAGE_BASE } from '../../services/api';
 import { colors, spacing } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -34,7 +33,6 @@ function SignInView() {
     try {
       setLoading('google');
       await signInWithGoogle();
-      await mergeLocalWatchlistToFirestore();
     } catch (error: any) {
       if (error.code !== 'SIGN_IN_CANCELLED') {
         Alert.alert('Sign In Failed', error.message);
@@ -48,7 +46,6 @@ function SignInView() {
     try {
       setLoading('apple');
       await signInWithApple();
-      await mergeLocalWatchlistToFirestore();
     } catch (error: any) {
       if (error.code !== 'ERR_REQUEST_CANCELED') {
         Alert.alert('Sign In Failed', error.message);

@@ -168,18 +168,29 @@ function AppContent() {
         <Stack.Screen
           name="Detail"
           component={DetailScreen}
-          options={{
+          options={({ navigation }) => ({
             headerTitle: '',
-            headerBackTitle: 'Back',
+            headerBackVisible: false,
             headerTransparent: true,
             headerTintColor: colors.textInverse,
+            headerLeftContainerStyle: { paddingLeft: 10 },
+            headerRightContainerStyle: { paddingRight: 10 },
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.detailHeaderButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
+              </TouchableOpacity>
+            ),
             headerRight: () => (
-              <TouchableOpacity onPress={handleShare} style={{ marginRight: 16 }}>
-                <Ionicons name="share-outline" size={24} color={colors.textInverse} />
+              <TouchableOpacity onPress={handleShare} style={styles.detailHeaderButton}>
+                <Ionicons name="share-outline" size={22} color={colors.textInverse} />
               </TouchableOpacity>
             ),
             contentStyle: { backgroundColor: colors.background },
-          }}
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -217,5 +228,13 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 14 : 10,
     fontWeight: '600',
     marginTop: 2,
+  },
+  detailHeaderButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.35)',
   },
 });

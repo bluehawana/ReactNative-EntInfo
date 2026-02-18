@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import * as authService from '../services/auth';
+import { queryClient } from '../services/queryClient';
+import { mergeLocalWatchlistToFirestore } from '../services/watchlist';
 
 interface AuthContextValue {
   user: FirebaseAuthTypes.User | null;
@@ -22,6 +24,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = authService.onAuthStateChanged((firebaseUser) => {
       setUser(firebaseUser);
       setIsLoading(false);
+
+      void (async () => {
+        if (firebaseUser) {
+          try {
+            await mergeLocalWatchlistToFirestore();
+          } catch (error) {
+            console.error('Watchlist merge failed:', error);
+          }
+        }
+
+        // Auth changes alter watchlist source (local vs Firestore / user scope).
+        queryClient.invalidateQueries({ queryKey: ['watchlist'] });
+      })();
     });
     return unsubscribe;
   }, []);

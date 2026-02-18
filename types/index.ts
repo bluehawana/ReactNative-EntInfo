@@ -82,6 +82,12 @@ export interface WatchProvidersResponse {
   };
 }
 
+export interface ExternalIds {
+  imdb_id?: string | null;
+  tvdb_id?: number | null;
+  wikidata_id?: string | null;
+}
+
 export interface MovieDetails {
   id: number;
   title: string;
@@ -94,6 +100,7 @@ export interface MovieDetails {
   genres: Genre[];
   tagline: string;
   status: string;
+  external_ids?: ExternalIds;
 }
 
 export interface TVDetails {
@@ -110,4 +117,5 @@ export interface TVDetails {
   status: string;
   number_of_seasons: number;
   number_of_episodes: number;
+  external_ids?: ExternalIds;
 }

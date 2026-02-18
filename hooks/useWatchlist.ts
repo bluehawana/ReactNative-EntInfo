@@ -4,18 +4,25 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import auth from '@react-native-firebase/auth';
 import * as watchlistService from '../services/watchlist';
 import type { WatchlistItem } from '../services/watchlist';
 
 const WATCHLIST_QUERY_KEY = ['watchlist'] as const;
+
+function getWatchlistScope(): string {
+  return auth().currentUser?.uid ?? 'guest';
+}
 
 /**
  * Hook to fetch the user's watchlist
  * @returns Query result with watchlist items
  */
 export function useWatchlist() {
+  const scope = getWatchlistScope();
+
   return useQuery({
-    queryKey: WATCHLIST_QUERY_KEY,
+    queryKey: [...WATCHLIST_QUERY_KEY, scope],
     queryFn: watchlistService.getWatchlist,
     staleTime: Infinity, // Watchlist is user data, don't stale it
     gcTime: Infinity, // Keep in cache indefinitely
@@ -29,8 +36,10 @@ export function useWatchlist() {
  * @returns Query result with boolean indicating if item is in watchlist
  */
 export function useIsInWatchlist(id: number, mediaType: 'movie' | 'tv') {
+  const scope = getWatchlistScope();
+
   return useQuery({
-    queryKey: [...WATCHLIST_QUERY_KEY, 'check', id, mediaType],
+    queryKey: [...WATCHLIST_QUERY_KEY, scope, 'check', id, mediaType],
     queryFn: () => watchlistService.isInWatchlist(id, mediaType),
     staleTime: Infinity,
     enabled: id > 0,
@@ -65,12 +74,14 @@ export function useRemoveFromWatchlist() {
     mutationFn: (params: { id: number; mediaType: 'movie' | 'tv' }) =>
       watchlistService.removeFromWatchlist(params.id, params.mediaType),
     onSuccess: (_, variables) => {
+      const scope = getWatchlistScope();
+
       // Invalidate watchlist query
       queryClient.invalidateQueries({ queryKey: WATCHLIST_QUERY_KEY });
 
       // Also invalidate specific check query
       queryClient.invalidateQueries({
-        queryKey: [...WATCHLIST_QUERY_KEY, 'check', variables.id, variables.mediaType],
+        queryKey: [...WATCHLIST_QUERY_KEY, scope, 'check', variables.id, variables.mediaType],
       });
     },
   });
@@ -112,8 +123,10 @@ export function useWatchlistToggle(id: number, mediaType: 'movie' | 'tv') {
  * @returns Query result with watchlist count
  */
 export function useWatchlistCount() {
+  const scope = getWatchlistScope();
+
   return useQuery({
-    queryKey: [...WATCHLIST_QUERY_KEY, 'count'],
+    queryKey: [...WATCHLIST_QUERY_KEY, scope, 'count'],
     queryFn: async () => {
       const list = await watchlistService.getWatchlist();
       return list.length;

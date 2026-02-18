@@ -18,10 +18,14 @@ web-build/
 # Sensitive credentials
 google-service-account-key.json
 client_secret_*.json
+android/app/debug.keystore
 
 # Build outputs
 *.aab
 *.apk
+
+# IDE
+.idea/
 
 # macOS
 .DS_Store
