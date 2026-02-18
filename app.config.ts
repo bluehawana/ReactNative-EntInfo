@@ -8,13 +8,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     '@react-native-firebase/app',
     '@react-native-firebase/auth',
-    '@react-native-google-signin/google-signin',
+    ['@react-native-google-signin/google-signin', {
+      iosUrlScheme: 'com.googleusercontent.apps.391837711816-epqml59ko2gkm58eebcik3vt8pmup6js',
+    }],
     'expo-apple-authentication',
     [
       'expo-build-properties',
       {
         ios: {
           useFrameworks: 'static',
+          forceStaticLinking: ['RNFBApp', 'RNFBAuth', 'RNFBFirestore'],
         },
       },
     ],
