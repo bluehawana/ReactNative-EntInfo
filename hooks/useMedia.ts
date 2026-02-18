@@ -19,7 +19,9 @@ import {
   getTVWatchProviders,
   IMAGE_BASE,
   IMAGE_BASE_LARGE,
+  IMAGE_ORIGINAL,
   PROFILE_BASE,
+  PROVIDER_LOGO_BASE,
 } from '../services/api';
 import { queryKeys } from '../services/queryClient';
 import type {
@@ -344,4 +346,4 @@ export function useInvalidateMedia() {
 }
 
 // Re-export image URL helpers for convenience
-export { IMAGE_BASE, IMAGE_BASE_LARGE, PROFILE_BASE };
+export { IMAGE_BASE, IMAGE_BASE_LARGE, IMAGE_ORIGINAL, PROFILE_BASE, PROVIDER_LOGO_BASE };

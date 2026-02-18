@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, StatusBar, Share, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Share, Alert, TouchableOpacity, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { queryClient } from './services/queryClient';
 import { MoviesScreen } from './components/screens/MoviesScreen';
 import { TVsScreen } from './components/screens/TVsScreen';
@@ -11,8 +12,12 @@ import { HomeScreen } from './components/screens/HomeScreen';
 import { SearchScreen } from './components/screens/SearchScreen';
 import { TrendingByRegionScreen } from './components/screens/TrendingByRegionScreen';
 import { DetailScreen } from './components/screens/DetailScreen';
-import { colors, spacing } from './theme/simple';
+import { ProfileScreen } from './components/screens/ProfileScreen';
+import { AuthProvider } from './hooks/useAuth';
+import { colors } from './theme/simple';
 import { Ionicons } from '@expo/vector-icons';
+
+const isTV = Platform.isTV;
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -24,11 +29,14 @@ type TabParamList = {
   TVs: undefined;
   Home: undefined;
   Search: undefined;
+  Profile: undefined;
   Trending: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
+
+const TAB_ICON_SIZE = isTV ? 32 : 22;
 
 function MainTabs() {
   return (
@@ -49,7 +57,7 @@ function MainTabs() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={TAB_ICON_SIZE} color={color} />
           ),
         }}
       />
@@ -59,7 +67,7 @@ function MainTabs() {
         options={{
           tabBarLabel: 'Movies',
           tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? 'film' : 'film-outline'} size={22} color={color} />
+            <Ionicons name={focused ? 'film' : 'film-outline'} size={TAB_ICON_SIZE} color={color} />
           ),
         }}
       />
@@ -69,7 +77,7 @@ function MainTabs() {
         options={{
           tabBarLabel: 'TV',
           tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? 'tv' : 'tv-outline'} size={22} color={color} />
+            <Ionicons name={focused ? 'tv' : 'tv-outline'} size={TAB_ICON_SIZE} color={color} />
           ),
         }}
       />
@@ -79,7 +87,17 @@ function MainTabs() {
         options={{
           tabBarLabel: 'Search',
           tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? 'search' : 'search-outline'} size={22} color={color} />
+            <Ionicons name={focused ? 'search' : 'search-outline'} size={TAB_ICON_SIZE} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'person-circle' : 'person-circle-outline'} size={TAB_ICON_SIZE} color={color} />
           ),
         }}
       />
@@ -89,7 +107,7 @@ function MainTabs() {
         options={{
           tabBarLabel: 'Global',
           tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? 'globe' : 'globe-outline'} size={22} color={color} />
+            <Ionicons name={focused ? 'globe' : 'globe-outline'} size={TAB_ICON_SIZE} color={color} />
           ),
         }}
       />
@@ -101,7 +119,7 @@ function AppContent() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: 'Check out this movie/TV show on EntInfo app!',
+        message: 'Check out this movie/TV show on 2Watch app!',
       });
     } catch (error) {
       Alert.alert('Error', 'Could not share');
@@ -170,9 +188,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <AppContent />
+        </QueryClientProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
 
@@ -181,18 +203,18 @@ const styles = StyleSheet.create({
     elevation: 0,
     shadowColor: 'transparent',
     borderTopWidth: 0,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 90,
-    paddingBottom: 28,
+    position: isTV ? 'relative' : 'absolute',
+    bottom: isTV ? undefined : 0,
+    left: isTV ? undefined : 0,
+    right: isTV ? undefined : 0,
+    height: isTV ? 70 : 90,
+    paddingBottom: isTV ? 10 : 28,
     paddingTop: 8,
-    paddingHorizontal: 10,
-    backgroundColor: 'rgba(15,23,30,0.98)',
+    paddingHorizontal: isTV ? 40 : 10,
+    backgroundColor: isTV ? colors.background : 'rgba(15,23,30,0.98)',
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: isTV ? 14 : 10,
     fontWeight: '600',
     marginTop: 2,
   },

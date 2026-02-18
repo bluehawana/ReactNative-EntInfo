@@ -12,7 +12,10 @@ import {
   ScrollView,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Platform,
 } from 'react-native';
+
+const isTV = Platform.isTV;
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,13 +25,13 @@ import { colors, spacing } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
 import { EmptyState } from '../ui/EmptyState';
-import { IMAGE_BASE_LARGE, IMAGE_BASE } from '../../services/api';
+import { IMAGE_BASE_LARGE, IMAGE_ORIGINAL, IMAGE_BASE } from '../../services/api';
 import type { TrendingItem, Movie, TVShow } from '../../types';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const HERO_HEIGHT = SCREEN_HEIGHT * 0.55;
-const CARD_WIDTH = 110;
-const CARD_HEIGHT = 165;
+const HERO_HEIGHT = isTV ? SCREEN_HEIGHT * 0.65 : SCREEN_HEIGHT * 0.55;
+const CARD_WIDTH = isTV ? 180 : 110;
+const CARD_HEIGHT = isTV ? 270 : 165;
 const AUTO_SCROLL_INTERVAL = 5000;
 
 export function HomeScreen() {
@@ -97,8 +100,9 @@ export function HomeScreen() {
   };
 
   const getBackdropUrl = (item: TrendingItem | Movie | TVShow) => {
+    // Use original quality for hero images (full HD)
     if ('backdrop_path' in item && item.backdrop_path) {
-      return `${IMAGE_BASE_LARGE}${item.backdrop_path}`;
+      return `${IMAGE_ORIGINAL}${item.backdrop_path}`;
     }
     if (item.poster_path) {
       return `${IMAGE_BASE_LARGE}${item.poster_path}`;
@@ -219,14 +223,14 @@ export function HomeScreen() {
 
       {/* Floating App Title */}
       <View style={[styles.appHeader, { paddingTop: insets.top + 8 }]}>
-        <Text style={styles.appTitle}>EntInfo</Text>
+        <Text style={styles.appTitle}>2Watch</Text>
       </View>
 
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         bounces={true}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
+        contentContainerStyle={{ paddingBottom: isTV ? 40 : insets.bottom + 80 }}
       >
         {/* Hero Carousel */}
         <View style={styles.heroContainer}>
@@ -349,11 +353,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 100,
-    paddingHorizontal: 16,
-    paddingBottom: 10,
+    paddingHorizontal: isTV ? 48 : 16,
+    paddingBottom: isTV ? 20 : 10,
   },
   appTitle: {
-    fontSize: 24,
+    fontSize: isTV ? 36 : 24,
     fontWeight: '800',
     color: '#00A8E1',
     letterSpacing: -0.5,
@@ -409,13 +413,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 16,
+    paddingHorizontal: isTV ? 48 : 16,
   },
   heroTitle: {
-    fontSize: 26,
+    fontSize: isTV ? 42 : 26,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: isTV ? 12 : 8,
     textShadowColor: 'rgba(0,0,0,0.8)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
@@ -426,7 +430,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   metaText: {
-    fontSize: 13,
+    fontSize: isTV ? 18 : 13,
     color: 'rgba(255,255,255,0.8)',
     fontWeight: '500',
   },
@@ -443,7 +447,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   includedText: {
-    fontSize: 12,
+    fontSize: isTV ? 16 : 12,
     color: '#00A8E1',
     fontWeight: '600',
   },
@@ -468,28 +472,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   section: {
-    marginTop: 20,
+    marginTop: isTV ? 32 : 20,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: isTV ? 48 : 16,
+    marginBottom: isTV ? 20 : 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: isTV ? 28 : 17,
     fontWeight: '600',
     color: '#FFFFFF',
   },
   horizontalList: {
-    paddingHorizontal: 16,
-    gap: 10,
+    paddingHorizontal: isTV ? 48 : 16,
+    gap: isTV ? 20 : 10,
   },
   posterCard: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    borderRadius: 6,
+    borderRadius: isTV ? 10 : 6,
     overflow: 'hidden',
   },
   posterImage: {

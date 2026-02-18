@@ -4,10 +4,12 @@
   <dict>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <true/>
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>EntInfo</string>
+    <string>2watch</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,18 +29,41 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>entinfo</string>
+          <string>2watch</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>entinfo</string>
+          <string>com.googleusercontent.apps.391837711816-epqml59ko2gkm58eebcik3vt8pmup6js</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+2watch</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>6</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>nflx</string>
+      <string>disneyplus</string>
+      <string>primevideo</string>
+      <string>hulu</string>
+      <string>max</string>
+      <string>paramountplus</string>
+      <string>peacocktv</string>
+      <string>tvapp</string>
+      <string>youtube</string>
+      <string>crunchyroll</string>
+      <string>tubitv</string>
+      <string>plutotv</string>
+    </array>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -50,7 +75,13 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>This app does not use the camera.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app does not access your photo library.</string>
     <key>RCTNewArchEnabled</key>
+    <true/>
+    <key>UIAppSupportsHDR</key>
     <true/>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
@@ -75,7 +106,7 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>UIUserInterfaceStyle</key>
-    <string>Light</string>
+    <string>Dark</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
   </dict>

@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "391837711816-psidh7g233mg549ebih4cfimp433e2bs.apps.googleusercontent.com",
+          "client_id": "391837711816-54o4ebd0qiavjvponmfr1bev521mvlvi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.twowatch.app",
-            "certificate_hash": "1567b6c6ec6a8c782b5d58e6186f86f549292546"
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {

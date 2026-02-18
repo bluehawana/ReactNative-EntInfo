@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, Image, TouchableOpacity, Alert, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { IMAGE_BASE } from '../../services/api';
@@ -66,8 +66,6 @@ export function WatchingListScreen() {
     </View>
   );
 }
-
-import { Text } from 'react-native';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

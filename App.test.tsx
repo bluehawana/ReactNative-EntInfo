@@ -241,7 +241,7 @@ describe('Custom Hooks', () => {
 
       await waitFor(() => {
         expect(result.current.details).toBeDefined();
-        expect(result.current.details?.title).toBe('Fight Club');
+        expect((result.current.details as any)?.title).toBe('Fight Club');
         expect(result.current.details?.vote_average).toBe(8.4);
       });
     });
@@ -266,7 +266,7 @@ describe('Custom Hooks', () => {
 
       await waitFor(() => {
         expect(result.current.details).toBeDefined();
-        expect(result.current.details?.name).toBe('Breaking Bad');
+        expect((result.current.details as any)?.name).toBe('Breaking Bad');
       });
     });
 

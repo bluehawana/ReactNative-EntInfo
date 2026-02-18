@@ -1,4 +1,0 @@
-#!/bin/bash
-cd /Users/harvadlee/Projects/ReactNative-EntInfo/android
-source ~/.zshrc
-./gradlew assembleDebug --no-daemon

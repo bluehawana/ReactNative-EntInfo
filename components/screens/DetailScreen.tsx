@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, TouchableOpacity, StatusBar, Platform, Animated, Alert, Linking as RNLinking } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
-import { IMAGE_BASE_LARGE, PROFILE_BASE } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
+import { IMAGE_ORIGINAL, IMAGE_BASE_LARGE, PROFILE_BASE, PROVIDER_LOGO_BASE } from '../../services/api';
 import { streamingProviders } from '../../services/streamingLinks';
 import { colors, spacing, typography } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -22,6 +23,7 @@ export function DetailScreen() {
   const route = useRoute<DetailScreenRouteProp>();
   const { id, mediaType } = route.params;
   const { details, credits, providers, isLoading, error, refetch } = useMediaDetail(id, mediaType);
+  const { user } = useAuth();
   const { data: inWatchlist } = useIsInWatchlist(id, mediaType);
   const addToWatchlist = useAddToWatchlist();
   const removeFromWatchlist = useRemoveFromWatchlist();
@@ -39,6 +41,14 @@ export function DetailScreen() {
   }, []);
 
   const handleWatchlistToggle = () => {
+    if (!user) {
+      Alert.alert(
+        'Sign In Required',
+        'Sign in to save items to your watchlist and sync across devices.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
     if (!details) return;
     const title = 'title' in details ? details.title : details.name;
     if (inWatchlist) {
@@ -63,8 +73,6 @@ export function DetailScreen() {
       window.open(webUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-
-    const { Linking } = require('react-native');
 
     // Build deep link based on provider
     let deepLink = '';
@@ -111,9 +119,9 @@ export function DetailScreen() {
     // On native, try deep link first, fall back to web
     if (deepLink) {
       try {
-        const canOpen = await Linking.canOpenURL(deepLink);
+        const canOpen = await RNLinking.canOpenURL(deepLink);
         if (canOpen) {
-          await Linking.openURL(deepLink);
+          await RNLinking.openURL(deepLink);
           return;
         }
       } catch {
@@ -122,7 +130,7 @@ export function DetailScreen() {
     }
 
     // Fallback: open web URL in browser
-    await Linking.openURL(webUrl);
+    await RNLinking.openURL(webUrl);
   };
 
   if (isLoading) return <View style={[styles.container, { backgroundColor: colors.background }]}><StatusBar barStyle="light-content" /><LoadingSpinner /></View>;
@@ -154,7 +162,7 @@ export function DetailScreen() {
       <StatusBar barStyle="light-content" />
       <View style={styles.backdropContainer}>
         {details.backdrop_path ? (
-          <Image source={{ uri: `${IMAGE_BASE_LARGE}${details.backdrop_path}` }} style={styles.backdrop} />
+          <Image source={{ uri: `${IMAGE_ORIGINAL}${details.backdrop_path}` }} style={styles.backdrop} />
         ) : (
           <View style={[styles.backdrop, { backgroundColor: colors.surfaceSecondary }]} />
         )}
@@ -216,7 +224,7 @@ export function DetailScreen() {
                   activeOpacity={0.7}
                 >
                   <Image
-                    source={{ uri: `${PROFILE_BASE}${provider.logo_path}` }}
+                    source={{ uri: `${PROVIDER_LOGO_BASE}${provider.logo_path}` }}
                     style={[styles.providerLogo, { backgroundColor: colors.surface }]}
                   />
                   <Text style={[styles.providerName, { color: colors.textSecondary }]} numberOfLines={1}>

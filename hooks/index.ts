@@ -20,8 +20,13 @@ export {
   useInvalidateMedia,
   IMAGE_BASE,
   IMAGE_BASE_LARGE,
+  IMAGE_ORIGINAL,
   PROFILE_BASE,
+  PROVIDER_LOGO_BASE,
 } from './useMedia';
+
+// Auth hooks
+export { useAuth, AuthProvider } from './useAuth';
 
 // Watchlist hooks
 export {

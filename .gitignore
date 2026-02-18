@@ -15,5 +15,13 @@ web-build/
 .env.local
 .env.*.local
 
+# Sensitive credentials
+google-service-account-key.json
+client_secret_*.json
+
+# Build outputs
+*.aab
+*.apk
+
 # macOS
 .DS_Store

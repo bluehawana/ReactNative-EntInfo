@@ -103,7 +103,7 @@ export function TrendingByRegionScreen() {
         />
       ) : (
         <FlatList
-          data={items}
+          data={items as any[]}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
@@ -115,8 +115,6 @@ export function TrendingByRegionScreen() {
             <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />
           }
           showsVerticalScrollIndicator={false}
-          onRefresh={refetch}
-          refreshing={isLoading}
         />
       )}
     </View>

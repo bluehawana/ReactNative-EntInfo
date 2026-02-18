@@ -20,7 +20,7 @@
       "supportsAppleTv": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.twowatch.app",
-      "buildNumber": "5",
+      "buildNumber": "6",
       "teamId": "B5627M73YT",
       "usesAppleSignIn": true,
       "config": {

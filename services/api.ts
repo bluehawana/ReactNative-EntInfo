@@ -14,9 +14,13 @@ import {
 
 const API_KEY = Constants.expoConfig?.extra?.tmdbApiKey as string;
 const BASE_URL = 'https://api.themoviedb.org/3';
-export const IMAGE_BASE = 'https://image.tmdb.org/t/p/w342';
-export const IMAGE_BASE_LARGE = 'https://image.tmdb.org/t/p/w780';
-export const PROFILE_BASE = 'https://image.tmdb.org/t/p/w185';
+
+// High-resolution image URLs for HD/1080p quality
+export const IMAGE_BASE = 'https://image.tmdb.org/t/p/w1280';       // 1280px for posters - Full HD quality
+export const IMAGE_BASE_LARGE = 'https://image.tmdb.org/t/p/w1280';  // 1280px for backdrops - 720p/1080p HD
+export const IMAGE_ORIGINAL = 'https://image.tmdb.org/t/p/original'; // Full resolution for hero images
+export const PROFILE_BASE = 'https://image.tmdb.org/t/p/h632';        // 632px for cast photos - HD quality
+export const PROVIDER_LOGO_BASE = 'https://image.tmdb.org/t/p/w300'; // 300px for provider logos
 
 export const tmdbApi = axios.create({
   baseURL: BASE_URL,

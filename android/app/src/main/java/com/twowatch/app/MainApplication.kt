@@ -1,4 +1,4 @@
-package com.anonymous.EntInfo
+package com.twowatch.app
 
 import android.app.Application
 import android.content.res.Configuration
