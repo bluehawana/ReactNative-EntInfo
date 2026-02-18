@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "391837711816",
+    "project_id": "watch-8f60a",
+    "storage_bucket": "watch-8f60a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391837711816:android:c327275ff13c81af7394fd",
+        "android_client_info": {
+          "package_name": "com.twowatch.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "391837711816-psidh7g233mg549ebih4cfimp433e2bs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.twowatch.app",
+            "certificate_hash": "1567b6c6ec6a8c782b5d58e6186f86f549292546"
+          }
+        },
+        {
+          "client_id": "391837711816-m4p5insj3ovdpl0g3b18n416hg405si8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-Qom1in45TCNqhrfesO7f1a7PVY7B1jE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "391837711816-m4p5insj3ovdpl0g3b18n416hg405si8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "391837711816-epqml59ko2gkm58eebcik3vt8pmup6js.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.twowatch.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
