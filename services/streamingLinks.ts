@@ -11,6 +11,22 @@ export interface StreamingProvider {
   icon: string;
 }
 
+export type ProviderMediaType = 'movie' | 'tv';
+
+export interface ProviderOpenOptions {
+  title?: string;
+  mediaType?: ProviderMediaType;
+  providerPageUrl?: string;
+}
+
+type ProviderInput = string | ProviderOpenOptions | undefined;
+
+function normalizeProviderInput(input?: ProviderInput): ProviderOpenOptions {
+  if (!input) return {};
+  if (typeof input === 'string') return { title: input };
+  return input;
+}
+
 export const streamingProviders: Record<number, StreamingProvider> = {
   // Apple TV+
   350: {
@@ -129,16 +145,19 @@ export const streamingProviders: Record<number, StreamingProvider> = {
 /**
  * Get deep link URL for a provider
  */
-export function getProviderDeepLink(providerId: number, searchQuery?: string): string | null {
+export function getProviderDeepLink(providerId: number, input?: ProviderInput): string | null {
   const provider = streamingProviders[providerId];
   if (!provider) return null;
 
-  const encodedQuery = encodeURIComponent(searchQuery || '');
-  const slug = searchQuery ? `?q=${encodedQuery}` : '';
+  const { title } = normalizeProviderInput(input);
+  const encodedQuery = encodeURIComponent(title || '');
+  const slug = title ? `?q=${encodedQuery}` : '';
 
   switch (providerId) {
     case 350: // Apple TV+
-      return `tvapp://watch?contentType=movie&contentId=${searchQuery || ''}`;
+    case 2: // Apple TV / iTunes
+      // Prefer search deep link over legacy "watch/contentId" route, which often lands on app home.
+      return `tvapp://search?term=${encodedQuery}`;
     case 8: // Netflix
       return `nflx://search?query=${encodedQuery}`;
     case 391: // Disney+
@@ -161,44 +180,88 @@ export function getProviderDeepLink(providerId: number, searchQuery?: string): s
 }
 
 /**
- * Open a streaming provider
+ * Returns an HTTPS search URL that lands on results for the given title.
+ * iOS and Android treat these as universal links and open them directly
+ * inside the provider app if installed, otherwise fall back to browser.
+ */
+export function getProviderWebUrl(providerId: number, input?: ProviderInput): string | null {
+  const { title } = normalizeProviderInput(input);
+  if (!title) return streamingProviders[providerId]?.webUrl ?? null;
+
+  const q = encodeURIComponent(title);
+
+  switch (providerId) {
+    case 350:
+    case 2:   return `https://tv.apple.com/search?term=${q}`;           // Apple TV / iTunes
+    case 8:   return `https://www.netflix.com/search?q=${q}`;           // Netflix
+    case 391: return `https://www.disneyplus.com/search/${q}`;          // Disney+
+    case 384: return `https://play.max.com/search?q=${q}`;              // Max (HBO)
+    case 119: return `https://www.amazon.com/gp/video/search?phrase=${q}`; // Prime Video
+    case 15:  return `https://www.hulu.com/search?query=${q}`;          // Hulu
+    case 531: return `https://www.paramountplus.com/search/${q}/`;      // Paramount+
+    case 498: return `https://www.peacocktv.com/search?q=${q}`;         // Peacock
+    case 247: return `https://www.youtube.com/results?search_query=${q}`; // YouTube
+    case 726: return `https://www.crunchyroll.com/search?q=${q}`;       // Crunchyroll
+    case 359: return `https://tubitv.com/search/${q}`;                  // Tubi
+    case 290: return `https://pluto.tv/search/${q}`;                    // Pluto TV
+    case 3:   return `https://play.google.com/store/search?q=${q}&c=movies`; // Google Play
+    case 257: return `https://www.fubo.tv/welcome?q=${q}`;              // Fubo
+    case 37:  return `https://www.sho.com/search#${q}`;                 // Showtime
+    case 11:  return `https://mubi.com/search/${q}`;                    // Mubi
+    case 99:  return `https://www.shudder.com/search?q=${q}`;           // Shudder
+    case 151: return `https://www.britbox.com/us/search?q=${q}`;        // BritBox
+    case 526: return `https://www.amcplus.com/search?q=${q}`;           // AMC+
+    case 43:  return `https://www.starz.com/us/en/search#q=${q}`;       // Starz
+    default: {
+      const provider = streamingProviders[providerId];
+      return provider ? `${provider.webUrl}/search?q=${q}` : null;
+    }
+  }
+}
+
+/**
+ * Opens the streaming provider, landing on search results for the title.
+ *
+ * Strategy (in order):
+ *  1. HTTPS universal link (provider search page) — OS routes to app if installed
+ *  2. JustWatch page for this exact title from TMDB (providerPageUrl)
+ *  3. JustWatch generic search
  */
 export async function openStreamingProvider(
   providerId: number,
-  searchQuery?: string
+  input?: ProviderInput
 ): Promise<{ success: boolean; openedApp: boolean }> {
-  const provider = streamingProviders[providerId];
-  if (!provider) return { success: false, openedApp: false };
-
   const { Linking } = await import('react-native');
-  const deepLink = getProviderDeepLink(providerId, searchQuery);
+  const { title, providerPageUrl } = normalizeProviderInput(input);
+  const q = encodeURIComponent(title || '');
 
-  if (!deepLink) {
-    // Fallback to web URL
-    await Linking.openURL(provider.webUrl);
-    return { success: true, openedApp: false };
+  // 1. Provider-specific HTTPS search (universal link → opens app)
+  const universalLink = getProviderWebUrl(providerId, input);
+  if (universalLink) {
+    try {
+      await Linking.openURL(universalLink);
+      return { success: true, openedApp: true };
+    } catch {
+      // fall through
+    }
   }
 
-  try {
-    // Try to open the app first
-    const canOpen = await Linking.canOpenURL(deepLink);
-
-    if (canOpen) {
-      await Linking.openURL(deepLink);
-      return { success: true, openedApp: true };
-    }
-
-    // Fallback to web URL
-    await Linking.openURL(provider.webUrl);
-    return { success: true, openedApp: false };
-  } catch (error) {
-    // Final fallback to web URL
+  // 2. JustWatch page for this exact title (from TMDB watch/providers response)
+  if (providerPageUrl) {
     try {
-      await Linking.openURL(provider.webUrl);
+      await Linking.openURL(providerPageUrl);
       return { success: true, openedApp: false };
     } catch {
-      return { success: false, openedApp: false };
+      // fall through
     }
+  }
+
+  // 3. JustWatch search as last resort
+  try {
+    await Linking.openURL(`https://www.justwatch.com/us/search?q=${q}`);
+    return { success: true, openedApp: false };
+  } catch {
+    return { success: false, openedApp: false };
   }
 }
 

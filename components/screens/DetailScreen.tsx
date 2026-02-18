@@ -7,7 +7,7 @@ import { useMediaDetail } from '../../hooks/useMedia';
 import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { useAuth } from '../../hooks/useAuth';
 import { IMAGE_ORIGINAL, IMAGE_BASE_LARGE, PROFILE_BASE, PROVIDER_LOGO_BASE } from '../../services/api';
-import { streamingProviders } from '../../services/streamingLinks';
+import { getProviderWebUrl, openStreamingProvider } from '../../services/streamingLinks';
 import { colors, spacing, typography } from '../../theme/simple';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorView } from '../ui/ErrorView';
@@ -60,79 +60,26 @@ export function DetailScreen() {
 
   const handleProviderPress = async (providerId: number) => {
     if (!details) return;
-    const provider = streamingProviders[providerId];
     const title = 'title' in details ? details.title : details.name;
     const encodedTitle = encodeURIComponent(title);
+    const providerInput = {
+      title,
+      mediaType,
+      providerPageUrl: usProviders?.link,
+    };
+    const fallbackWebUrl =
+      getProviderWebUrl(providerId, providerInput) ||
+      `https://www.justwatch.com/us/search?q=${encodedTitle}`;
 
     if (Platform.OS === 'web') {
-      window.open(`https://www.justwatch.com/us/search?q=${encodedTitle}`, '_blank', 'noopener,noreferrer');
+      window.open(fallbackWebUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
-    // Use HTTPS universal links — iOS/Android open these directly in the provider app
-    // if installed, otherwise fall back to browser. More reliable than custom schemes.
-    let universalLink = '';
-    switch (providerId) {
-      case 350: // Apple TV+  — tv.apple.com is a universal link handled by the TV app
-      case 2:   // Apple TV (buy/rent)
-        universalLink = `https://tv.apple.com/search?term=${encodedTitle}`;
-        break;
-      case 8:   // Netflix
-        universalLink = `https://www.netflix.com/search?q=${encodedTitle}`;
-        break;
-      case 391: // Disney+
-        universalLink = `https://www.disneyplus.com/search/${encodedTitle}`;
-        break;
-      case 384: // Max (HBO)
-        universalLink = `https://play.max.com/search?q=${encodedTitle}`;
-        break;
-      case 119: // Prime Video
-        universalLink = `https://www.amazon.com/gp/video/search?phrase=${encodedTitle}`;
-        break;
-      case 15:  // Hulu
-        universalLink = `https://www.hulu.com/search?query=${encodedTitle}`;
-        break;
-      case 531: // Paramount+
-        universalLink = `https://www.paramountplus.com/search/${encodedTitle}/`;
-        break;
-      case 498: // Peacock
-        universalLink = `https://www.peacocktv.com/search?q=${encodedTitle}`;
-        break;
-      case 247: // YouTube
-        universalLink = `https://www.youtube.com/results?search_query=${encodedTitle}`;
-        break;
-      case 726: // Crunchyroll
-        universalLink = `https://www.crunchyroll.com/search?q=${encodedTitle}`;
-        break;
-      case 359: // Tubi
-        universalLink = `https://tubitv.com/search/${encodedTitle}`;
-        break;
-      case 290: // Pluto TV
-        universalLink = `https://pluto.tv/search/${encodedTitle}`;
-        break;
-      default:
-        universalLink = provider?.webUrl
-          ? `${provider.webUrl}/search?q=${encodedTitle}`
-          : '';
+    const result = await openStreamingProvider(providerId, providerInput);
+    if (!result.success) {
+      await RNLinking.openURL(fallbackWebUrl);
     }
-
-    if (universalLink) {
-      try {
-        await RNLinking.openURL(universalLink);
-        return;
-      } catch {
-        // fall through
-      }
-    }
-
-    // Last resort: JustWatch link from TMDB (shows all providers for this title)
-    const justWatchLink = usProviders?.link;
-    if (justWatchLink) {
-      await RNLinking.openURL(justWatchLink);
-      return;
-    }
-
-    await RNLinking.openURL(`https://www.justwatch.com/us/search?q=${encodedTitle}`);
   };
 
   if (isLoading) return <View style={[styles.container, { backgroundColor: colors.background }]}><StatusBar barStyle="light-content" /><LoadingSpinner /></View>;
