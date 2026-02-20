@@ -53,7 +53,7 @@ jobs:
         run: |
           git config user.email "ci@github-actions"
           git config user.name "GitHub Actions"
-          git add -f android/app/google-services.json ios/2watch/GoogleService-Info.plist
+          git add -f android/app/google-services.json
 
       - name: Build Android (production AAB)
         run: eas build --platform android --profile production --non-interactive
