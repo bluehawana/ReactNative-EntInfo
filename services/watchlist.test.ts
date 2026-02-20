@@ -373,6 +373,7 @@ describe('Watchlist Service — Firestore (authenticated user)', () => {
   const authModule = require('@react-native-firebase/auth');
   const mockAuthInstance = authModule.default();
   const firestoreModule = require('@react-native-firebase/firestore').default;
+  const firestoreModular = require('@react-native-firebase/firestore');
   const mockDocRef = (firestoreModule as any).__mockDocRef ||
     firestoreModule().__mockDocRef || {};
 
@@ -432,5 +433,42 @@ describe('Watchlist Service — Firestore (authenticated user)', () => {
 
     const added = await addToWatchlist({ id: 99, mediaType: 'tv', title: 'Test', poster_path: null, vote_average: 7 });
     expect(added).toBe(true);
+  });
+
+  it('isInWatchlist should fallback to local cache on transient Firestore outage', async () => {
+    (firestoreModular.getDoc as jest.Mock).mockRejectedValue({ code: 'firestore/unavailable' });
+    const local = [
+      {
+        id: 550,
+        mediaType: 'movie' as const,
+        title: 'Fight Club',
+        poster_path: '/poster.jpg',
+        vote_average: 8.4,
+        addedAt: Date.now(),
+      },
+    ];
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(local));
+
+    const result = await isInWatchlist(550, 'movie');
+    expect(result).toBe(true);
+    expect(AsyncStorage.getItem).toHaveBeenCalledWith('2watchhub_watchlist');
+  });
+
+  it('addToWatchlist should fallback to local cache on transient Firestore outage', async () => {
+    (firestoreModular.getDoc as jest.Mock).mockRejectedValue({ code: 'firestore/unavailable' });
+    (firestoreModular.setDoc as jest.Mock).mockRejectedValue({ code: 'firestore/unavailable' });
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('[]');
+    (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
+
+    const result = await addToWatchlist({
+      id: 551,
+      mediaType: 'movie',
+      title: 'Fallback Movie',
+      poster_path: '/poster.jpg',
+      vote_average: 7.2,
+    });
+
+    expect(result).toBe(true);
+    expect(AsyncStorage.setItem).toHaveBeenCalled();
   });
 });

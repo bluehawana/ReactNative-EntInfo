@@ -1,0 +1,55 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-submit-android:
+    name: Build & Submit Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Expo & EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Generate Firebase config
+        run: npm run setup:firebase
+        env:
+          FIREBASE_IOS_API_KEY: ${{ secrets.FIREBASE_IOS_API_KEY }}
+          FIREBASE_IOS_CLIENT_ID: ${{ secrets.FIREBASE_IOS_CLIENT_ID }}
+          FIREBASE_IOS_APP_ID: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          FIREBASE_GCM_SENDER_ID: ${{ secrets.FIREBASE_GCM_SENDER_ID }}
+          FIREBASE_BUNDLE_ID: ${{ secrets.FIREBASE_BUNDLE_ID }}
+          FIREBASE_ANDROID_API_KEY: ${{ secrets.FIREBASE_ANDROID_API_KEY }}
+          FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          FIREBASE_ANDROID_PACKAGE: ${{ secrets.FIREBASE_ANDROID_PACKAGE }}
+          FIREBASE_ANDROID_CLIENT_ID1: ${{ secrets.FIREBASE_ANDROID_CLIENT_ID1 }}
+          FIREBASE_ANDROID_CERT_HASH: ${{ secrets.FIREBASE_ANDROID_CERT_HASH }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_PROJECT_NUMBER: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+
+      - name: Build Android (production AAB)
+        run: eas build --platform android --profile production --non-interactive
+
+      - name: Submit to Google Play
+        run: eas submit --platform android --non-interactive

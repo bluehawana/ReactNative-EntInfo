@@ -292,15 +292,7 @@ export function ProfileScreen() {
   const { data: watchlist, isLoading: watchlistLoading } = useWatchlist();
   const removeFromWatchlist = useRemoveFromWatchlist();
 
-  if (authLoading) return <LoadingSpinner />;
-
-  if (!user) return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <SignInView />
-      <AboutFooter />
-    </View>
-  );
-
+  // All hooks must be called before any early returns (Rules of Hooks)
   const handlePress = useCallback(
     (item: WatchlistItem) => {
       navigation.navigate('Detail', { id: item.id, mediaType: item.mediaType });
@@ -340,6 +332,15 @@ export function ProfileScreen() {
       index,
     }),
     []
+  );
+
+  if (authLoading) return <LoadingSpinner />;
+
+  if (!user) return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <SignInView />
+      <AboutFooter />
+    </View>
   );
 
   return (

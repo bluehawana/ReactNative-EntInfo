@@ -2,7 +2,8 @@
   "project_info": {
     "project_number": "391837711816",
     "project_id": "watch-8f60a",
-    "storage_bucket": "watch-8f60a.firebasestorage.app"
+    "storage_bucket": "watch-8f60a.firebasestorage.app",
+    "firebase_url": "https://watch-8f60a-default-rtdb.firebaseio.com"
   },
   "client": [
     {
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "391837711816-m4p5insj3ovdpl0g3b18n416hg405si8.apps.googleusercontent.com",
+          "client_id": "",
           "client_type": 3
         }
       ],
@@ -33,19 +34,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "391837711816-m4p5insj3ovdpl0g3b18n416hg405si8.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "391837711816-epqml59ko2gkm58eebcik3vt8pmup6js.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.twowatch.app"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
