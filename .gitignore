@@ -20,11 +20,12 @@ google-service-account-key.json
 client_secret_*.json
 android/app/debug.keystore
 
-# Firebase/Google service files (contain API keys)
+# Firebase/Google service files
+# iOS plist contains sensitive API key - keep out of git
 ios/**/GoogleService-Info.plist
 ios/GoogleService-Info.plist
-android/app/google-services.json
-android/google-services.json
+# android google-services.json is safe to commit (keys are public in APK,
+# restricted by package name + SHA-1 fingerprint)
 
 # Build outputs
 *.aab
