@@ -49,6 +49,12 @@ jobs:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
 
+      - name: Include Firebase configs in EAS archive
+        run: |
+          git config user.email "ci@github-actions"
+          git config user.name "GitHub Actions"
+          git add -f android/app/google-services.json ios/2watch/GoogleService-Info.plist
+
       - name: Build Android (production AAB)
         run: eas build --platform android --profile production --non-interactive
 
