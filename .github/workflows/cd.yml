@@ -53,4 +53,4 @@ jobs:
         run: eas build --platform android --profile production --non-interactive
 
       - name: Submit to Google Play
-        run: eas submit --platform android --non-interactive
+        run: eas submit --platform android --latest --non-interactive

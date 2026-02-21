@@ -24,11 +24,13 @@ else
   npm install
 fi
 
+# Generate Firebase config — allowed to fail if env vars not set (iOS plist optional for CI)
 if [ -f scripts/setup-firebase-config.js ]; then
-  node scripts/setup-firebase-config.js
+  node scripts/setup-firebase-config.js || echo "Warning: Firebase config generation skipped (env vars not set)"
 fi
 
+echo "Running pod install..."
 cd ios
-pod install
+pod install --repo-update
 
 echo "Xcode Cloud post-clone setup complete."
