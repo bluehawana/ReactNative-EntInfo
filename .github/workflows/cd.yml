@@ -52,5 +52,8 @@ jobs:
       - name: Build Android (production AAB)
         run: eas build --platform android --profile production --non-interactive
 
+      - name: Write Google Play service account key
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > google-service-account-key.json
+
       - name: Submit to Google Play
         run: eas submit --platform android --latest --non-interactive
