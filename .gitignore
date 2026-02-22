@@ -17,8 +17,13 @@ web-build/
 
 # Sensitive credentials
 google-service-account-key.json
+watch-8f60a-*.json
 client_secret_*.json
 android/app/debug.keystore
+
+# Personal/large files
+*.dmg
+*.pdf
 
 # Firebase/Google service files
 # iOS plist contains sensitive API key - keep out of git
