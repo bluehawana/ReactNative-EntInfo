@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:391837711816:android:c327275ff13c81af7394fd",
         "android_client_info": {
-          "package_name": "com.twowatch.app"
+          "package_name": "com.twowatch.hub"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "391837711816-54o4ebd0qiavjvponmfr1bev521mvlvi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.twowatch.app",
+            "package_name": "com.twowatch.hub",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },

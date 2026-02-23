@@ -1,4 +1,4 @@
-package com.twowatch.app
+package com.twowatch.hub
 
 import android.app.Application
 import android.content.res.Configuration

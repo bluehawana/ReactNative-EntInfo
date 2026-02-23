@@ -1,4 +1,4 @@
-package com.twowatch.app
+package com.twowatch.hub
 
 import android.os.Build
 import android.os.Bundle
