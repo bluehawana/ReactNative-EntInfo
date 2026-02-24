@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip build and submit existing latest build'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   build-and-submit-android:
@@ -51,6 +60,7 @@ jobs:
           GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
 
       - name: Build Android (production AAB)
+        if: ${{ github.event.inputs.skip_build != 'true' }}
         run: eas build --platform android --profile production --non-interactive
 
       - name: Write Google Play service account key
