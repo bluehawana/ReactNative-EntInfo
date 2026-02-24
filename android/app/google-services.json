@@ -1,35 +1,21 @@
 {
   "project_info": {
-    "project_number": "391837711816",
-    "project_id": "watch-8f60a",
-    "storage_bucket": "watch-8f60a.firebasestorage.app",
-    "firebase_url": "https://watch-8f60a-default-rtdb.firebaseio.com"
+    "project_number": "292118029056",
+    "project_id": "watchhub-2e772",
+    "storage_bucket": "watchhub-2e772.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:391837711816:android:c327275ff13c81af7394fd",
+        "mobilesdk_app_id": "1:292118029056:android:87f1ade10db47e3dafc9e5",
         "android_client_info": {
           "package_name": "com.twowatch.hub"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "391837711816-54o4ebd0qiavjvponmfr1bev521mvlvi.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.twowatch.hub",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "391837711816-epqml59ko2gkm58eebcik3vt8pmup6js.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC-Qom1in45TCNqhrfesO7f1a7PVY7B1jE"
+          "current_key": "AIzaSyDgY6Ff89um4hwf-kVFzkol6wAGzmhQYTU"
         }
       ],
       "services": {
